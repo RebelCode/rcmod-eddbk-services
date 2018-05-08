@@ -11,7 +11,7 @@ use Psr\EventManager\EventInterface;
 use RebelCode\Transformers\TransformerInterface;
 
 /**
- *
+ * Handler for loading downloads.
  *
  * @since [*next-version*]
  */

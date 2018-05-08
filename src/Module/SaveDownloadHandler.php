@@ -16,6 +16,11 @@ use Psr\EventManager\EventInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ * Handler for saving downloads.
+ *
+ * @since [*next-version*]
+ */
 class SaveDownloadHandler implements InvocableInterface
 {
     /* @since [*next-version*] */
