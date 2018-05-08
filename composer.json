@@ -1,6 +1,6 @@
 {
     "name": "rebelcode/rcmod-eddbk-services",
-    "description": "A RebelCode module that adds EDD Downloads as booking services, as used in EDD Bookings.",
+    "description": "A RebelCode module that makes EDD Downloads bookable services for EDD Bookings.",
     "type": "rc-module",
     "license": "GPL-3.0",
     "authors": [
