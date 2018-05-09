@@ -3,7 +3,6 @@
 namespace RebelCode\EddBookings\Services\Module;
 
 use ArrayIterator;
-use Dhii\Cache\MemoryMemoizer;
 use Dhii\Config\ConfigFactoryInterface;
 use Dhii\Data\Container\ContainerFactoryInterface;
 use Dhii\Event\EventFactoryInterface;
@@ -73,80 +72,105 @@ class EddBkServicesModule extends AbstractBaseModule
         return $this->_setupContainer(
             $this->_loadPhpConfigFile(RCMOD_EDDBK_SERVICES_CONFIG_FILE),
             [
-                /**
+                /*
                  * PSR-7 server request instance.
                  *
                  * @since [*next-version*]
                  */
-                'server_request'                                   => function (ContainerInterface $c) {
+                'server_request' => function (ContainerInterface $c) {
                     return ServerRequest::fromGlobals();
                 },
 
-                /**
+                /*
                  * PSR-7 server response instance.
                  *
                  * @since [*next-version*]
                  */
-                'server_response'                                  => function (ContainerInterface $c) {
+                'server_response' => function (ContainerInterface $c) {
                     return new Response();
                 },
 
-                /**
-                 * The cache for the services controller.
-                 *
-                 * @since [*next-version*]
+                /*
+                 * The SELECT RM for services.
                  */
-                'eddbk_services_controller_cache'                  => function (ContainerInterface $c) {
-                    return new MemoryMemoizer();
+                'eddbk_services_select_rm' => function (ContainerInterface $c) {
+                    return new ServicesSelectResourceModel();
                 },
 
-                /**
-                 * The services controller.
-                 *
-                 * @since [*next-version*]
+                /*
+                 * The UPDATE RM for services.
                  */
-                'eddbk_services_controller'                        => function (ContainerInterface $c) {
-                    return new ServicesController(
-                        $c->get('session_rules_select_rm'),
-                        $c->get('session_rules_insert_rm'),
-                        $c->get('session_rules_update_rm'),
-                        $c->get('session_rules_delete_rm'),
-                        $c->get('eddbk_services_controller_cache'),
-                        $c->get('sql_expression_builder')
-                    );
+                'eddbk_services_update_rm' => function (ContainerInterface $c) {
+                    return new ServicesUpdateResourceModel();
                 },
 
-                /**
+                /*
                  * The handler for saving downloads.
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_save_download_handler'                      => function (ContainerInterface $c) {
-                    return new SaveDownloadHandler(
+                'eddbk_admin_edit_services_ui_update_handler' => function (ContainerInterface $c) {
+                    return new AdminEditServiceUiUpdateHandler(
                         $c->get('server_request'),
                         $c->get('server_response'),
-                        $c->get('eddbk_services_controller')
+                        $c->get('eddbk_services_update_rm'),
+                        $c->get('session_rules_insert_rm'),
+                        $c->get('session_rules_update_rm'),
+                        $c->get('session_rules_delete_rm'),
+                        $c->get('sql_expression_builder')
                     );
                 },
 
-                /**
-                 * The handler for loading downloads.
+                /*
+                 * The handler for providing the service data as state to the admin bookings UI.
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_load_download_handler'                      => function (ContainerInterface $c) {
-                    return new LoadDownloadHandler(
-                        $c->get('eddbk_services_controller'),
-                        $c->get('eddbk_service_transformer')
+                'eddbk_admin_edit_services_ui_state_handler' => function (ContainerInterface $c) {
+                    return new AdminEditServiceUiStateHandler(
+                        $c->get('eddbk_services_select_rm'),
+                        $c->get('session_rules_select_rm'),
+                        $c->get('eddbk_admin_edit_services_ui_state_transformer'),
+                        $c->get('sql_expression_builder')
                     );
                 },
 
-                /**
+                /*
+                 * The handler for providing services to the admin bookings UI.
+                 *
+                 * @since [*next-version*]
+                 */
+                'eddbk_admin_bookings_ui_services_handler' => function (ContainerInterface $c) {
+                    return new AdminBookingsUiServicesHandler(
+                        $c->get('eddbk_services_select_rm'),
+                        $c->get('eddbk_service_list_transformer')
+                    );
+                },
+
+                /*
+                 * The transformer for transforming lists of services.
+                 *
+                 * @since [*next-version*]
+                 */
+                'eddbk_service_list_transformer' => function (ContainerInterface $c) {
+                    return new CallbackTransformer(function ($list) use ($c) {
+                        $iterator = $this->_normalizeIterator($list);
+                        $transformed = new TransformerIterator(
+                            $iterator,
+                            $c->get('eddbk_admin_edit_services_ui_state_transformer')
+                        );
+                        $array = $this->_normalizeArray($transformed);
+
+                        return $array;
+                    });
+                },
+
+                /*
                  * The transformer for transforming services.
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_service_transformer'                        => function (ContainerInterface $c) {
+                'eddbk_admin_edit_services_ui_state_transformer' => function (ContainerInterface $c) {
                     return new MapTransformer([
                         [
                             MapTransformer::K_SOURCE => 'id',
@@ -167,13 +191,17 @@ class EddBkServicesModule extends AbstractBaseModule
                     ]);
                 },
 
-                /**
+                /*
                  * The transformer for transforming lists of session rules.
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_session_rule_list_transformer'              => function (ContainerInterface $c) {
+                'eddbk_session_rule_list_transformer' => function (ContainerInterface $c) {
                     return new CallbackTransformer(function ($list) use ($c) {
+                        if ($list === null) {
+                            return [];
+                        }
+
                         $iterator = $this->_normalizeIterator($list);
                         $transformed = new TransformerIterator($iterator, $c->get('eddbk_session_rule_transformer'));
                         $array = $this->_normalizeArray($transformed);
@@ -182,12 +210,12 @@ class EddBkServicesModule extends AbstractBaseModule
                     });
                 },
 
-                /**
+                /*
                  * The transformer for transforming session rules.
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_session_rule_transformer'                   => function (ContainerInterface $c) {
+                'eddbk_session_rule_transformer' => function (ContainerInterface $c) {
                     return new MapTransformer([
                         [
                             MapTransformer::K_SOURCE => 'id',
@@ -242,18 +270,18 @@ class EddBkServicesModule extends AbstractBaseModule
                         ],
                         [
                             MapTransformer::K_SOURCE      => 'exclude_dates',
-                            MapTransformer::K_TARGET      => 'excludeDates',
+                            MapTransformer::K_TARGET      => 'excludesDates',
                             MapTransformer::K_TRANSFORMER => $c->get('eddbk_comma_list_array_transformer'),
                         ],
                     ]);
                 },
 
-                /**
+                /*
                  * The transformer for transforming comma separating strings into arrays.
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_comma_list_array_transformer'               => function (ContainerInterface $c) {
+                'eddbk_comma_list_array_transformer' => function (ContainerInterface $c) {
                     return new CallbackTransformer(function ($commaList) {
                         return (strlen($commaList) > 0)
                             ? explode(',', $commaList)
@@ -261,29 +289,29 @@ class EddBkServicesModule extends AbstractBaseModule
                     });
                 },
 
-                /**
+                /*
                  * The transformer for transforming values into booleans.
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_boolean_transformer'                        => function (ContainerInterface $c) {
+                'eddbk_boolean_transformer' => function (ContainerInterface $c) {
                     return new CallbackTransformer(function ($value) {
                         return (bool) $value;
                     });
                 },
 
-                /**
+                /*
                  * The transformer for transforming timestamps into date strings for the services UI.
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_services_ui_timestamp_date_transformer'     => function (ContainerInterface $c) {
+                'eddbk_services_ui_timestamp_date_transformer' => function (ContainerInterface $c) {
                     return new CallbackTransformer(function ($value) {
                         return date('Y-m-d', $value);
                     });
                 },
 
-                /**
+                /*
                  * The transformer for transforming timestamps into datetime strings for the services UI.
                  *
                  * @since [*next-version*]
@@ -309,10 +337,13 @@ class EddBkServicesModule extends AbstractBaseModule
         }
 
         // Event on EDD Download post save
-        $this->_attach('save_post_download', $c->get('eddbk_save_download_handler'));
+        $this->_attach('save_post_download', $c->get('eddbk_admin_edit_services_ui_update_handler'));
 
         // Event to load EDD Download data for the New/Edit UI
-        $this->_attach('eddbk_services_nedit_ui_state', $c->get('eddbk_load_download_handler'));
+        $this->_attach('eddbk_services_nedit_ui_state', $c->get('eddbk_admin_edit_services_ui_state_handler'));
+
+        // Event for providing the booking services for the admin bookings UI
+        $this->_attach('eddbk_admin_bookings_ui_services', $c->get('eddbk_admin_bookings_ui_services_handler'));
     }
 
     /**
