@@ -272,7 +272,7 @@ class EddBkServicesModule extends AbstractBaseModule
                         ],
                         [
                             MapTransformer::K_SOURCE      => 'exclude_dates',
-                            MapTransformer::K_TARGET      => 'excludesDates',
+                            MapTransformer::K_TARGET      => 'excludeDates',
                             MapTransformer::K_TRANSFORMER => $c->get('eddbk_comma_list_array_transformer'),
                         ],
                     ]);

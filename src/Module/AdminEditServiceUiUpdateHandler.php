@@ -317,7 +317,7 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
             'repeat_until_date'   => strtotime($this->_containerGet($ruleData, 'repeatUntilDate')),
             'repeat_weekly_on'    => implode(',', $this->_containerGet($ruleData, 'repeatWeeklyOn')),
             'repeat_monthly_on'   => implode(',', $this->_containerGet($ruleData, 'repeatMonthlyOn')),
-            'exclude_dates'       => implode(',', $this->_containerGet($ruleData, 'excludesDates')),
+            'exclude_dates'       => implode(',', $this->_containerGet($ruleData, 'excludeDates')),
         ];
     }
 }
