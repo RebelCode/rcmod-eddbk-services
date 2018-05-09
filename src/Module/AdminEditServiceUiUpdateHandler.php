@@ -233,16 +233,16 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
             $_rule   = $this->_processSessionRuleData($serviceId, $_ruleData);
             $_ruleId = $this->_containerGet($_rule, 'id');
 
-            // If rule has an ID, update the existing rule
-            if (is_numeric($_ruleId)) {
+            if ($_ruleId === null) {
+                // If rule has no ID, insert as a new rule
+                $_newRuleId = $this->sessionRulesInsertRm->insert([$_rule]);
+                $_ruleId = $_newRuleId[0];
+            } else {
+                // If rule has an ID, update the existing rule
                 $this->sessionRulesUpdateRm->update($_rule, $b->eq(
                     $b->var('id'),
                     $b->lit($_ruleId)
                 ));
-            } else {
-                // If rule has no ID, insert as a new rule
-                $_newRuleId = $this->sessionRulesInsertRm->insert([$_rule]);
-                $_ruleId = $_newRuleId[0];
             }
 
             $ruleIds[] = $_ruleId;
