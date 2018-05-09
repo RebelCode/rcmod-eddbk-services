@@ -252,7 +252,9 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
 
         foreach ($newRules as $_ruleData) {
             $_rule   = $this->_processSessionRuleData($serviceId, $_ruleData);
-            $_ruleId = $this->_containerGet($_rule, 'id');
+            $_ruleId = $this->_containerHas($_rule, 'id')
+                ? $this->_containerGet($_rule, 'id')
+                : null;
 
             if ($_ruleId === null) {
                 // If rule has no ID, insert as a new rule
