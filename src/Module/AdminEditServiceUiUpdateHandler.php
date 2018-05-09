@@ -8,8 +8,11 @@ use Dhii\Data\Container\ContainerHasCapableTrait;
 use Dhii\Data\Container\CreateContainerExceptionCapableTrait;
 use Dhii\Data\Container\CreateNotFoundExceptionCapableTrait;
 use Dhii\Data\Container\NormalizeKeyCapableTrait;
+use Dhii\Event\EventFactoryInterface;
+use Dhii\Exception\CreateInternalExceptionCapableTrait;
 use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
 use Dhii\Exception\CreateOutOfRangeExceptionCapableTrait;
+use Dhii\Exception\CreateRuntimeExceptionCapableTrait;
 use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Invocation\InvocableInterface;
 use Dhii\Iterator\CountIterableCapableTrait;
@@ -22,8 +25,10 @@ use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Psr\Container\ContainerInterface;
 use Psr\EventManager\EventInterface;
+use Psr\EventManager\EventManagerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use RebelCode\Modular\Events\EventsFunctionalityTrait;
 use stdClass;
 use Traversable;
 
@@ -34,6 +39,9 @@ use Traversable;
  */
 class AdminEditServiceUiUpdateHandler implements InvocableInterface
 {
+    /* @since [*next-version*] */
+    use EventsFunctionalityTrait;
+
     /* @since [*next-version*] */
     use ContainerGetCapableTrait;
 
@@ -66,6 +74,12 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
 
     /* @since [*next-version*] */
     use CreateNotFoundExceptionCapableTrait;
+
+    /* @since [*next-version*] */
+    use CreateInternalExceptionCapableTrait;
+
+    /* @since [*next-version*] */
+    use CreateRuntimeExceptionCapableTrait;
 
     /* @since [*next-version*] */
     use StringTranslatingTrait;
@@ -152,6 +166,8 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
      * @param UpdateCapableInterface $sessionRulesUpdateRm The UPDATE resource model for session rules.
      * @param DeleteCapableInterface $sessionRulesDeleteRm The DELETE resource model for session rules.
      * @param object                 $exprBuilder          The expression builder.
+     * @param EventManagerInterface  $eventManager         The event manager.
+     * @param EventFactoryInterface  $eventFactory         The event factory.
      */
     public function __construct(
         ServerRequestInterface $request,
@@ -160,8 +176,13 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
         InsertCapableInterface $sessionRulesInsertRm,
         UpdateCapableInterface $sessionRulesUpdateRm,
         DeleteCapableInterface $sessionRulesDeleteRm,
-        $exprBuilder
+        $exprBuilder,
+        EventManagerInterface $eventManager,
+        EventFactoryInterface $eventFactory
     ) {
+        $this->_setEventManager($eventManager);
+        $this->_setEventFactory($eventFactory);
+
         $this->request              = $request;
         $this->response             = $response;
         $this->servicesUpdateRm     = $servicesUpdateRm;
@@ -236,7 +257,7 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
             if ($_ruleId === null) {
                 // If rule has no ID, insert as a new rule
                 $_newRuleId = $this->sessionRulesInsertRm->insert([$_rule]);
-                $_ruleId = $_newRuleId[0];
+                $_ruleId    = $_newRuleId[0];
             } else {
                 // If rule has an ID, update the existing rule
                 $this->sessionRulesUpdateRm->update($_rule, $b->eq(
@@ -261,6 +282,11 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
                 )
             )
         ));
+
+        // Trigger session generation
+        $this->_trigger('eddbk_generate_sessions', [
+            'service_id' => $serviceId,
+        ]);
     }
 
     /**
