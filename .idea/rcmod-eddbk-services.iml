@@ -20,9 +20,12 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/data-key-value-aware-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/data-object-abstract" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/data-path-aware-interface" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/evaluable-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/event-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/exception" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/exception-interface" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/expression-interface" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/expression-renderer-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/factory-base" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/factory-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/file-finder-abstract" />
@@ -42,7 +45,9 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/php-cs-fixer-config" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/psr-14" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/simple-cache-interface" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/sql-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/stringable-interface" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/type-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/validation-abstract" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/validation-base" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/validation-interface" />
@@ -64,6 +69,7 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/psr/http-message" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/psr/log" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/ptrofimov/xpmock" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/rebelcode/expression-wp-query-builder" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/rebelcode/modular" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/rebelcode/module-iterator-abstract" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/rebelcode/transformers" />

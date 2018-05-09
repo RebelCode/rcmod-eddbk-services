@@ -84,6 +84,12 @@
       <path value="$PROJECT_DIR$/vendor/dhii/simple-cache-interface" />
       <path value="$PROJECT_DIR$/vendor/dhii/map" />
       <path value="$PROJECT_DIR$/vendor/dhii/memoize-memory" />
+      <path value="$PROJECT_DIR$/vendor/dhii/expression-renderer-interface" />
+      <path value="$PROJECT_DIR$/vendor/dhii/evaluable-interface" />
+      <path value="$PROJECT_DIR$/vendor/dhii/type-interface" />
+      <path value="$PROJECT_DIR$/vendor/dhii/sql-interface" />
+      <path value="$PROJECT_DIR$/vendor/dhii/expression-interface" />
+      <path value="$PROJECT_DIR$/vendor/rebelcode/expression-wp-query-builder" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="5.4.0" />
