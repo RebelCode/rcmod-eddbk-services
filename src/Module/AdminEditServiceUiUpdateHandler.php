@@ -269,19 +269,19 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
             $ruleIds[] = $_ruleId;
         }
 
-        // Remove the rules for this service that were not given in the update list
-        $this->sessionRulesDeleteRm->delete($b->and(
-            $b->eq(
-                $b->var('service_id'),
-                $b->lit($serviceId)
-            ),
-            $b->not(
+        // Condition to remove the rules for this service
+        $expr = $b->eq($b->var('service_id'), $b->lit($serviceId));
+        // If rules were added/updated, ignore them in the condition
+        if (count($ruleIds) > 0) {
+            $expr = $b->and($expr, $b->not(
                 $b->in(
                     $b->var('id'),
                     $b->set($ruleIds)
                 )
-            )
-        ));
+            ));
+        }
+        // Delete the sessions according to the above condition
+        $this->sessionRulesDeleteRm->delete($expr);
 
         // Trigger session generation
         $this->_trigger('eddbk_generate_sessions', [
