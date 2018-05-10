@@ -167,10 +167,11 @@ class AdminEditServiceUiStateHandler implements InvocableInterface
 
         // Create the data, transform and normalize to array
         $data = [
-            'id'              => $serviceId,
-            'session_lengths' => $this->_containerGet($service, 'session_lengths'),
-            'display_options' => $this->_containerGet($service, 'display_options'),
-            'session_rules'   => $rules,
+            'id'               => $serviceId,
+            'bookings_enabled' => $this->_containerGet($service, 'bookings_enabled'),
+            'session_lengths'  => $this->_containerGet($service, 'session_lengths'),
+            'display_options'  => $this->_containerGet($service, 'display_options'),
+            'session_rules'    => $rules,
         ];
         $state = $this->stateTransformer->transform($data);
         $state = $this->_normalizeArray($state);
