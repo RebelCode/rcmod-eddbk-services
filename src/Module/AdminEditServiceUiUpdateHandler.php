@@ -212,6 +212,9 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
 
         // Build change set
         $changeSet = [];
+        if ($this->_containerHas($serviceData, 'bookingsEnabled')) {
+            $changeSet['bookings_enabled'] = $this->_containerGet($serviceData, 'bookingsEnabled');
+        }
         if ($this->_containerHas($serviceData, 'sessionLengths')) {
             $changeSet['session_lengths'] = $this->_containerGet($serviceData, 'sessionLengths');
         }
