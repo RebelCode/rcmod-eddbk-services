@@ -116,6 +116,8 @@ class ServicesSelectResourceModel implements SelectCapableInterface
         return [
             'post_type'   => 'download',
             'post_status' => ['publish', 'draft', 'private', 'future'],
+            'meta_key'    => 'eddbk_bookings_enabled',
+            'meta_value'  => true
         ];
     }
 
