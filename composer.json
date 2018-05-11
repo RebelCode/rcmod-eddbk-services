@@ -13,7 +13,7 @@
     "prefer-stable": true,
     "require": {
         "php": "^5.4 | ^7.0",
-        "rebelcode/modular": "dev-task/initial-classes",
+        "rebelcode/modular": "^0.1-alpha1",
         "rebelcode/transformers": "dev-task/initial-classes",
         "rebelcode/expression-wp-query-builder": "dev-task/initial-classes",
         "dhii/cqrs-resource-model-interface": "^0.1-alpha2",
