@@ -137,10 +137,9 @@ class AdminEditServiceUiStateHandler implements InvocableInterface
 
         $serviceId = $event->getParam(static::K_EVENT_SERVICE_ID);
 
+        // Only continue for valid service IDs
         if (empty($serviceId)) {
-            throw $this->_createRuntimeException(
-                $this->__('Invalid or no service ID was given in the event'), null, null
-            );
+            return;
         }
 
         $b = $this->exprBuilder;
@@ -155,6 +154,11 @@ class AdminEditServiceUiStateHandler implements InvocableInterface
         $service = null;
         foreach ($services as $service) {
             break;
+        }
+
+        // If service was not found, ignore
+        if ($service === null) {
+            return;
         }
 
         // Get the session rules

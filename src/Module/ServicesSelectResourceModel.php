@@ -95,9 +95,10 @@ class ServicesSelectResourceModel implements SelectCapableInterface
             $_id = $_post->ID;
 
             $services[] = [
-                'id'              => $_id,
-                'session_lengths' => $this->_getPostMeta($_id, 'eddbk_session_lengths', []),
-                'display_options' => $this->_getPostMeta($_id, 'eddbk_display_options', []),
+                'id'               => $_id,
+                'bookings_enabled' => $this->_getPostMeta($_id, 'eddbk_bookings_enabled', false),
+                'session_lengths'  => $this->_getPostMeta($_id, 'eddbk_session_lengths', []),
+                'display_options'  => $this->_getPostMeta($_id, 'eddbk_display_options', []),
             ];
         }
 
