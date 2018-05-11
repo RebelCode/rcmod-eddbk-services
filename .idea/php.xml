@@ -57,7 +57,6 @@
       <path value="$PROJECT_DIR$/vendor/dhii/iterator-helper-base" />
       <path value="$PROJECT_DIR$/vendor/dhii/normalization-helper-base" />
       <path value="$PROJECT_DIR$/vendor/dhii/factory-base" />
-      <path value="$PROJECT_DIR$/vendor/dhii/modular-interface" />
       <path value="$PROJECT_DIR$/vendor/dhii/data-key-value-aware-interface" />
       <path value="$PROJECT_DIR$/vendor/dhii/args-list-validation" />
       <path value="$PROJECT_DIR$/vendor/dhii/config-interface" />
@@ -90,6 +89,7 @@
       <path value="$PROJECT_DIR$/vendor/dhii/sql-interface" />
       <path value="$PROJECT_DIR$/vendor/dhii/expression-interface" />
       <path value="$PROJECT_DIR$/vendor/rebelcode/expression-wp-query-builder" />
+      <path value="$PROJECT_DIR$/vendor/phing/phing" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="5.4.0" />

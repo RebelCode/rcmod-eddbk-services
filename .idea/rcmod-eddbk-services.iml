@@ -39,7 +39,6 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/iterator-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/map" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/memoize-memory" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/modular-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/module-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/normalization-helper-base" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/php-cs-fixer-config" />
