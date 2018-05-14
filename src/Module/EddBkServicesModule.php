@@ -178,6 +178,9 @@ class EddBkServicesModule extends AbstractBaseModule
                             MapTransformer::K_SOURCE => 'id',
                         ],
                         [
+                            MapTransformer::K_SOURCE => 'name',
+                        ],
+                        [
                             MapTransformer::K_SOURCE => 'bookings_enabled',
                             MapTransformer::K_TARGET => 'bookingsEnabled',
                         ],

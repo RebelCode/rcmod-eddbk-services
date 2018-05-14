@@ -96,6 +96,7 @@ class ServicesSelectResourceModel implements SelectCapableInterface
 
             $services[] = [
                 'id'               => $_id,
+                'name'             => $this->_getPostTitle($_id),
                 'bookings_enabled' => $this->_getPostMeta($_id, 'eddbk_bookings_enabled', false),
                 'session_lengths'  => $this->_getPostMeta($_id, 'eddbk_session_lengths', []),
                 'display_options'  => $this->_getPostMeta($_id, 'eddbk_display_options', []),
@@ -241,6 +242,20 @@ class ServicesSelectResourceModel implements SelectCapableInterface
         }
 
         return;
+    }
+
+    /**
+     * Retrieves the title for a WordPress post.
+     *
+     * @since [*next-version*]
+     *
+     * @param int|string $id The ID of the service.
+     *
+     * @return string The post title.
+     */
+    protected function _getPostTitle($id)
+    {
+        return get_the_title($id);
     }
 
     /**
