@@ -77,7 +77,7 @@ class EddBkServicesModule extends AbstractBaseModule
                  *
                  * @since [*next-version*]
                  */
-                'server_request'                                   => function (ContainerInterface $c) {
+                'server_request' => function (ContainerInterface $c) {
                     return ServerRequest::fromGlobals();
                 },
 
@@ -86,21 +86,21 @@ class EddBkServicesModule extends AbstractBaseModule
                  *
                  * @since [*next-version*]
                  */
-                'server_response'                                  => function (ContainerInterface $c) {
+                'server_response' => function (ContainerInterface $c) {
                     return new Response();
                 },
 
                 /*
                  * The SELECT RM for services.
                  */
-                'eddbk_services_select_rm'                         => function (ContainerInterface $c) {
+                'eddbk_services_select_rm' => function (ContainerInterface $c) {
                     return new ServicesSelectResourceModel();
                 },
 
                 /*
                  * The UPDATE RM for services.
                  */
-                'eddbk_services_update_rm'                         => function (ContainerInterface $c) {
+                'eddbk_services_update_rm' => function (ContainerInterface $c) {
                     return new ServicesUpdateResourceModel();
                 },
 
@@ -109,7 +109,7 @@ class EddBkServicesModule extends AbstractBaseModule
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_admin_edit_services_ui_update_handler'      => function (ContainerInterface $c) {
+                'eddbk_admin_edit_services_ui_update_handler' => function (ContainerInterface $c) {
                     return new AdminEditServiceUiUpdateHandler(
                         $c->get('server_request'),
                         $c->get('server_response'),
@@ -128,7 +128,7 @@ class EddBkServicesModule extends AbstractBaseModule
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_admin_edit_services_ui_state_handler'       => function (ContainerInterface $c) {
+                'eddbk_admin_edit_services_ui_state_handler' => function (ContainerInterface $c) {
                     return new AdminEditServiceUiStateHandler(
                         $c->get('eddbk_services_select_rm'),
                         $c->get('session_rules_select_rm'),
@@ -142,7 +142,7 @@ class EddBkServicesModule extends AbstractBaseModule
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_admin_bookings_ui_services_handler'         => function (ContainerInterface $c) {
+                'eddbk_admin_bookings_ui_services_handler' => function (ContainerInterface $c) {
                     return new AdminBookingsUiServicesHandler(
                         $c->get('eddbk_services_select_rm'),
                         $c->get('eddbk_service_list_transformer')
@@ -154,14 +154,14 @@ class EddBkServicesModule extends AbstractBaseModule
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_service_list_transformer'                   => function (ContainerInterface $c) {
+                'eddbk_service_list_transformer' => function (ContainerInterface $c) {
                     return new CallbackTransformer(function ($list) use ($c) {
-                        $iterator    = $this->_normalizeIterator($list);
+                        $iterator = $this->_normalizeIterator($list);
                         $transformed = new TransformerIterator(
                             $iterator,
                             $c->get('eddbk_admin_edit_services_ui_state_transformer')
                         );
-                        $array       = $this->_normalizeArray($transformed);
+                        $array = $this->_normalizeArray($transformed);
 
                         return $array;
                     });
@@ -172,7 +172,7 @@ class EddBkServicesModule extends AbstractBaseModule
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_admin_edit_services_ui_state_transformer'   => function (ContainerInterface $c) {
+                'eddbk_admin_edit_services_ui_state_transformer' => function (ContainerInterface $c) {
                     return new MapTransformer([
                         [
                             MapTransformer::K_SOURCE => 'id',
@@ -208,15 +208,15 @@ class EddBkServicesModule extends AbstractBaseModule
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_session_rule_list_transformer'              => function (ContainerInterface $c) {
+                'eddbk_session_rule_list_transformer' => function (ContainerInterface $c) {
                     return new CallbackTransformer(function ($list) use ($c) {
                         if ($list === null) {
                             return [];
                         }
 
-                        $iterator    = $this->_normalizeIterator($list);
+                        $iterator = $this->_normalizeIterator($list);
                         $transformed = new TransformerIterator($iterator, $c->get('eddbk_session_rule_transformer'));
-                        $array       = $this->_normalizeArray($transformed);
+                        $array = $this->_normalizeArray($transformed);
 
                         return $array;
                     });
@@ -227,7 +227,7 @@ class EddBkServicesModule extends AbstractBaseModule
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_session_rule_transformer'                   => function (ContainerInterface $c) {
+                'eddbk_session_rule_transformer' => function (ContainerInterface $c) {
                     return new MapTransformer([
                         [
                             MapTransformer::K_SOURCE => 'id',
@@ -293,7 +293,7 @@ class EddBkServicesModule extends AbstractBaseModule
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_comma_list_array_transformer'               => function (ContainerInterface $c) {
+                'eddbk_comma_list_array_transformer' => function (ContainerInterface $c) {
                     return new CallbackTransformer(function ($commaList) {
                         return (strlen($commaList) > 0)
                             ? explode(',', $commaList)
@@ -306,7 +306,7 @@ class EddBkServicesModule extends AbstractBaseModule
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_boolean_transformer'                        => function (ContainerInterface $c) {
+                'eddbk_boolean_transformer' => function (ContainerInterface $c) {
                     return new CallbackTransformer(function ($value) {
                         return (bool) $value;
                     });
@@ -317,7 +317,7 @@ class EddBkServicesModule extends AbstractBaseModule
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_services_ui_timestamp_date_transformer'     => function (ContainerInterface $c) {
+                'eddbk_services_ui_timestamp_date_transformer' => function (ContainerInterface $c) {
                     return new CallbackTransformer(function ($value) use ($c) {
                         return date($c->get('services/session_rules/datetime_format'), $value);
                     });
@@ -334,7 +334,7 @@ class EddBkServicesModule extends AbstractBaseModule
                     });
                 },
 
-                /**
+                /*
                  * the transformer for transforming the session rule excluded dates for the services UI.
                  *
                  * @since [*next-version*]
@@ -345,14 +345,14 @@ class EddBkServicesModule extends AbstractBaseModule
 
                     return new CallbackTransformer(function ($value) use ($commaListTransformer, $datetimeTransformer) {
                         // Transform comma list to an iterator
-                        $array    = $commaListTransformer->transform($value);
+                        $array = $commaListTransformer->transform($value);
                         $iterator = $this->_normalizeIterator($array);
                         // Create the transformer iterator, to transform each timestamp into a datetime string
                         $transformIterator = new TransformerIterator($iterator, $datetimeTransformer);
                         // Reduce to an array and return
                         return $this->_normalizeArray($transformIterator);
                     });
-                }
+                },
             ]
         );
     }

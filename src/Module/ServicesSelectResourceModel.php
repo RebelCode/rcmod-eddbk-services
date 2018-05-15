@@ -87,9 +87,9 @@ class ServicesSelectResourceModel implements SelectCapableInterface
         $queryArgs = ($condition !== null)
             ? $this->_buildWpQueryArgs($condition)
             : [];
-        $fullArgs  = array_merge($this->_getDefaultWpQueryArgs(), $queryArgs);
-        $posts     = $this->_queryPosts($fullArgs);
-        $services  = [];
+        $fullArgs = array_merge($this->_getDefaultWpQueryArgs(), $queryArgs);
+        $posts    = $this->_queryPosts($fullArgs);
+        $services = [];
 
         foreach ($posts as $_post) {
             $_id = $_post->ID;

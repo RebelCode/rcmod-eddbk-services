@@ -310,7 +310,7 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
     protected function _processSessionRuleData($serviceId, $ruleData)
     {
         return [
-            'id'                  => $this->_containerHas($ruleData, 'id')
+            'id' => $this->_containerHas($ruleData, 'id')
                 ? $this->_containerGet($ruleData, 'id')
                 : null,
             'service_id'          => $serviceId,
