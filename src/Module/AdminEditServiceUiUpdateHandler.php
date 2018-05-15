@@ -221,6 +221,9 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
         if ($this->_containerHas($serviceData, 'displayOptions')) {
             $changeSet['display_options'] = $this->_containerGet($serviceData, 'displayOptions');
         }
+        if ($this->_containerHas($serviceData, 'timezone')) {
+            $changeSet['timezone'] = $this->_containerGet($serviceData, 'timezone');
+        }
 
         // Build condition
         $b    = $this->exprBuilder;

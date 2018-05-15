@@ -193,6 +193,9 @@ class EddBkServicesModule extends AbstractBaseModule
                             MapTransformer::K_TARGET => 'displayOptions',
                         ],
                         [
+                            MapTransformer::K_SOURCE => 'timezone',
+                        ],
+                        [
                             MapTransformer::K_SOURCE      => 'session_rules',
                             MapTransformer::K_TARGET      => 'availabilities',
                             MapTransformer::K_TRANSFORMER => $c->get('eddbk_session_rule_list_transformer'),
