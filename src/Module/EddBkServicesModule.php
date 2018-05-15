@@ -283,7 +283,7 @@ class EddBkServicesModule extends AbstractBaseModule
                         [
                             MapTransformer::K_SOURCE      => 'exclude_dates',
                             MapTransformer::K_TARGET      => 'excludeDates',
-                            MapTransformer::K_TRANSFORMER => $c->get('eddbk_comma_list_array_transformer'),
+                            MapTransformer::K_TRANSFORMER => $c->get('eddbk_services_ui_exlude_dates_transformer'),
                         ],
                     ]);
                 },
@@ -318,8 +318,8 @@ class EddBkServicesModule extends AbstractBaseModule
                  * @since [*next-version*]
                  */
                 'eddbk_services_ui_timestamp_date_transformer'     => function (ContainerInterface $c) {
-                    return new CallbackTransformer(function ($value) {
-                        return date('Y-m-d', $value);
+                    return new CallbackTransformer(function ($value) use ($c) {
+                        return date($c->get('services/session_rules/datetime_format'), $value);
                     });
                 },
 
@@ -329,10 +329,30 @@ class EddBkServicesModule extends AbstractBaseModule
                  * @since [*next-version*]
                  */
                 'eddbk_services_ui_timestamp_datetime_transformer' => function (ContainerInterface $c) {
-                    return new CallbackTransformer(function ($value) {
-                        return date('Y-m-d H:i:s', $value);
+                    return new CallbackTransformer(function ($value) use ($c) {
+                        return date($c->get('services/session_rules/datetime_format'), $value);
                     });
                 },
+
+                /**
+                 * the transformer for transforming the session rule excluded dates for the services UI.
+                 *
+                 * @since [*next-version*]
+                 */
+                'eddbk_services_ui_exlude_dates_transformer' => function (ContainerInterface $c) {
+                    $commaListTransformer = $c->get('eddbk_comma_list_array_transformer');
+                    $datetimeTransformer = $c->get('eddbk_services_ui_timestamp_datetime_transformer');
+
+                    return new CallbackTransformer(function ($value) use ($commaListTransformer, $datetimeTransformer) {
+                        // Transform comma list to an iterator
+                        $array    = $commaListTransformer->transform($value);
+                        $iterator = $this->_normalizeIterator($array);
+                        // Create the transformer iterator, to transform each timestamp into a datetime string
+                        $transformIterator = new TransformerIterator($iterator, $datetimeTransformer);
+                        // Reduce to an array and return
+                        return $this->_normalizeArray($transformIterator);
+                    });
+                }
             ]
         );
     }
