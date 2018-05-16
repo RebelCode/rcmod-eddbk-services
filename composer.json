@@ -15,7 +15,7 @@
         "php": "^5.4 | ^7.0",
         "rebelcode/modular": "^0.1-alpha1",
         "rebelcode/transformers": "^0.1-alpha1",
-        "rebelcode/expression-wp-query-builder": "dev-task/initial-classes",
+        "rebelcode/expression-wp-query-builder": "^0.1-alpha1",
         "dhii/cqrs-resource-model-interface": "^0.1-alpha2",
         "dhii/iterator-helper-base": "^0.1-alpha2",
         "dhii/memoize-memory": "^0.2-alpha1",

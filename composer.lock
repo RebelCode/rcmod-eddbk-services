@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "8cbb96ecd818a3084f63d3ab59353ff0",
+    "content-hash": "47c54bd7c9e8554e00dbea8c8c7b8464",
     "packages": [
         {
             "name": "dhii/args-list-validation",
@@ -2478,16 +2478,16 @@
         },
         {
             "name": "rebelcode/expression-wp-query-builder",
-            "version": "dev-task/initial-classes",
+            "version": "v0.1-alpha1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/RebelCode/expression-wp-query-builder-abstract.git",
-                "reference": "7710fecf02e8b8c90133281e1b43184010043703"
+                "reference": "1f72a94ad22cd56aa50cc88bfb6ac068e732bf0c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/RebelCode/expression-wp-query-builder-abstract/zipball/7710fecf02e8b8c90133281e1b43184010043703",
-                "reference": "7710fecf02e8b8c90133281e1b43184010043703",
+                "url": "https://api.github.com/repos/RebelCode/expression-wp-query-builder-abstract/zipball/1f72a94ad22cd56aa50cc88bfb6ac068e732bf0c",
+                "reference": "1f72a94ad22cd56aa50cc88bfb6ac068e732bf0c",
                 "shasum": ""
             },
             "require": {
@@ -2503,6 +2503,11 @@
                 "ptrofimov/xpmock": "^1.1"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-develop": "0.1.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "RebelCode\\WordPress\\Query\\Builder\\": "src"
@@ -2519,7 +2524,7 @@
                 }
             ],
             "description": "Abstract functionality for building WP_Query args using expressions.",
-            "time": "2018-05-09T11:41:52+00:00"
+            "time": "2018-05-16T10:53:34+00:00"
         },
         {
             "name": "rebelcode/modular",
@@ -4538,9 +4543,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "rebelcode/expression-wp-query-builder": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
