@@ -185,8 +185,9 @@ class EddBkServicesModule extends AbstractBaseModule
                             MapTransformer::K_TARGET => 'bookingsEnabled',
                         ],
                         [
-                            MapTransformer::K_SOURCE => 'session_lengths',
-                            MapTransformer::K_TARGET => 'sessionLengths',
+                            MapTransformer::K_SOURCE      => 'session_lengths',
+                            MapTransformer::K_TARGET      => 'sessionLengths',
+                            MapTransformer::K_TRANSFORMER => $c->get('eddbk_session_length_list_transformer'),
                         ],
                         [
                             MapTransformer::K_SOURCE => 'display_options',
@@ -201,6 +202,65 @@ class EddBkServicesModule extends AbstractBaseModule
                             MapTransformer::K_TRANSFORMER => $c->get('eddbk_session_rule_list_transformer'),
                         ],
                     ]);
+                },
+
+                /*
+                 * The transformer for transforming a list of session length configs.
+                 *
+                 * @since [*next-version*]
+                 */
+                'eddbk_session_length_list_transformer' => function(ContainerInterface $c) {
+                    return new CallbackTransformer(function ($sessionLengths) use ($c) {
+                        $iterator    = $this->_normalizeIterator($sessionLengths);
+                        $transformer = $c->get('eddbk_session_length_transformer');
+                        $result      = new TransformerIterator($iterator, $transformer);
+
+                        return iterator_to_array($result);
+                    });
+                },
+
+                /*
+                 * The transformer for transforming a session length config.
+                 *
+                 * @since [*next-version*]
+                 */
+                'eddbk_session_length_transformer' => function(ContainerInterface $c) {
+                    return new MapTransformer([
+                        [
+                            MapTransformer::K_SOURCE => 'length',
+                            MapTransformer::K_TARGET => 'sessionLength',
+                        ],
+                        [
+                            MapTransformer::K_SOURCE      => 'price',
+                            MapTransformer::K_TRANSFORMER => $c->get('eddbk_session_length_price_transformer'),
+                        ]
+                    ]);
+                },
+
+                /*
+                 * The transformer for transforming a session length's price.
+                 *
+                 * @since [*next-version*]
+                 */
+                'eddbk_session_length_price_transformer' => function (ContainerInterface $c) {
+                    return new CallbackTransformer(function($price) use ($c) {
+                        return [
+                            'amount'    => $price,
+                            'currency'  => edd_get_currency(),
+                            'formatted' => $c->get('eddbk_price_transformer')->transform($price)
+                        ];
+                    });
+                },
+
+                /*
+                 * The transformer for transforming a price amount into its formatted counterpart.
+                 *
+                 * @since [*next-version*]
+                 */
+                'eddbk_price_transformer' => function (ContainerInterface $c) {
+                    return new CallbackTransformer(function($price) use ($c) {
+                        return edd_currency_filter(edd_format_amount($price));
+                    });
                 },
 
                 /*
