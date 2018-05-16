@@ -210,15 +210,18 @@ class EddBkServicesModule extends AbstractBaseModule
                  */
                 'eddbk_session_rule_list_transformer' => function (ContainerInterface $c) {
                     return new CallbackTransformer(function ($list) use ($c) {
-                        if ($list === null) {
-                            return [];
+                        $rules = [];
+
+                        if ($list !== null) {
+                            $iterator = $this->_normalizeIterator($list);
+                            $transformed = new TransformerIterator($iterator, $c->get('eddbk_session_rule_transformer'));
+                            $rules = $this->_normalizeArray($transformed);
                         }
 
-                        $iterator = $this->_normalizeIterator($list);
-                        $transformed = new TransformerIterator($iterator, $c->get('eddbk_session_rule_transformer'));
-                        $array = $this->_normalizeArray($transformed);
 
-                        return $array;
+                        return [
+                            'rules' => $rules
+                        ];
                     });
                 },
 
