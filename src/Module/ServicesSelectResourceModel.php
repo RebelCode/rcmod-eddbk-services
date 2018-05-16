@@ -10,7 +10,10 @@ use Dhii\Expression\VariableTermInterface;
 use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Storage\Resource\Sql\EntityFieldInterface;
+use Dhii\Util\Normalization\NormalizeArrayCapableTrait;
+use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
+use RebelCode\Storage\Resource\WordPress\Posts\ExtractPostIdsFromExpressionCapableTrait;
 use RebelCode\WordPress\Query\Builder\BuildWpQueryArgsCapableTrait;
 use RebelCode\WordPress\Query\Builder\BuildWpQueryCompareCapableTrait;
 use RebelCode\WordPress\Query\Builder\BuildWpQueryMetaCompareCapableTrait;
@@ -32,10 +35,17 @@ use Traversable;
 class ServicesSelectResourceModel implements SelectCapableInterface
 {
     /* @since [*next-version*] */
-    use BuildWpQueryArgsCapableTrait;
+    use ExtractPostIdsFromExpressionCapableTrait;
 
     /* @since [*next-version*] */
-    use BuildWpQueryCompareCapableTrait;
+    use BuildWpQueryArgsCapableTrait {
+        BuildWpQueryArgsCapableTrait::_buildWpQueryCompare as _traitBuildWpQueryCompare;
+    }
+
+    /* @since [*next-version*] */
+    use BuildWpQueryCompareCapableTrait {
+        BuildWpQueryCompareCapableTrait::_buildWpQueryCompare as _traitBuildWpQueryCompare;
+    }
 
     /* @since [*next-version*] */
     use BuildWpQueryRelationCapableTrait;
@@ -62,7 +72,13 @@ class ServicesSelectResourceModel implements SelectCapableInterface
     use GetWpQueryRelationOperatorCapableTrait;
 
     /* @since [*next-version*] */
+    use NormalizeIntCapableTrait;
+
+    /* @since [*next-version*] */
     use NormalizeStringCapableTrait;
+
+    /* @since [*next-version*] */
+    use NormalizeArrayCapableTrait;
 
     /* @since [*next-version*] */
     use CreateInvalidArgumentExceptionCapableTrait;
@@ -87,6 +103,7 @@ class ServicesSelectResourceModel implements SelectCapableInterface
         $queryArgs = ($condition !== null)
             ? $this->_buildWpQueryArgs($condition)
             : [];
+
         $fullArgs = array_merge($this->_getDefaultWpQueryArgs(), $queryArgs);
         $posts    = $this->_queryPosts($fullArgs);
         $services = [];
@@ -120,6 +137,22 @@ class ServicesSelectResourceModel implements SelectCapableInterface
             'post_type'   => 'download',
             'post_status' => ['publish', 'draft', 'private', 'future'],
         ];
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @since [*next-version*]
+     */
+    protected function _buildWpQueryCompare(LogicalExpressionInterface $expression)
+    {
+        $postIds = $this->_extractPostIdsFromExpression($expression);
+
+        if (count($postIds) > 0) {
+            return ['post__in' => $postIds];
+        }
+
+        return $this->_traitBuildWpQueryCompare($expression);
     }
 
     /**
@@ -243,6 +276,26 @@ class ServicesSelectResourceModel implements SelectCapableInterface
         }
 
         return;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @since [*next-version*]
+     */
+    protected function _getPostEntityName()
+    {
+        return 'post';
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @since [*next-version*]
+     */
+    protected function _getPostIdFieldName()
+    {
+        return 'id';
     }
 
     /**
