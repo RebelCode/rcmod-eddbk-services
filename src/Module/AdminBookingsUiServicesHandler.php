@@ -6,8 +6,8 @@ use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
 use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Invocation\InvocableInterface;
 use Dhii\Storage\Resource\SelectCapableInterface;
+use Dhii\Transformer\TransformerInterface;
 use Psr\EventManager\EventInterface;
-use RebelCode\Transformers\TransformerInterface;
 
 /**
  * The event handler that provides the services for the admin bookings UI.

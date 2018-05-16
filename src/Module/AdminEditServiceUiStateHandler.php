@@ -12,10 +12,10 @@ use Dhii\Exception\CreateRuntimeExceptionCapableTrait;
 use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Invocation\InvocableInterface;
 use Dhii\Storage\Resource\SelectCapableInterface;
+use Dhii\Transformer\TransformerInterface;
 use Dhii\Util\Normalization\NormalizeArrayCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use Psr\EventManager\EventInterface;
-use RebelCode\Transformers\TransformerInterface;
 
 /**
  * Handler for providing the state to the admin edit service page UI.
