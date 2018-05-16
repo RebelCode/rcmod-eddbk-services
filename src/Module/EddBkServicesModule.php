@@ -227,8 +227,7 @@ class EddBkServicesModule extends AbstractBaseModule
                 'eddbk_session_length_transformer' => function(ContainerInterface $c) {
                     return new MapTransformer([
                         [
-                            MapTransformer::K_SOURCE => 'length',
-                            MapTransformer::K_TARGET => 'sessionLength',
+                            MapTransformer::K_SOURCE => 'sessionLength',
                         ],
                         [
                             MapTransformer::K_SOURCE      => 'price',
