@@ -176,6 +176,7 @@ class AdminEditServiceUiStateHandler implements InvocableInterface
             'bookings_enabled' => $this->_containerGet($service, 'bookings_enabled'),
             'session_lengths'  => $this->_containerGet($service, 'session_lengths'),
             'display_options'  => $this->_containerGet($service, 'display_options'),
+            'timezone'         => $this->_containerGet($service, 'timezone'),
             'session_rules'    => $rules,
         ];
         $state = $this->stateTransformer->transform($data);
