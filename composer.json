@@ -14,7 +14,7 @@
     "require": {
         "php": "^5.4 | ^7.0",
         "rebelcode/modular": "^0.1-alpha1",
-        "rebelcode/transformers": "dev-task/initial-classes",
+        "rebelcode/transformers": "^0.1-alpha1",
         "rebelcode/expression-wp-query-builder": "dev-task/initial-classes",
         "dhii/cqrs-resource-model-interface": "^0.1-alpha2",
         "dhii/iterator-helper-base": "^0.1-alpha2",

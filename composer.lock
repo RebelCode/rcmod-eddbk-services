@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "0f3865377de0f00ee28f4c4e9e25633c",
+    "content-hash": "8cbb96ecd818a3084f63d3ab59353ff0",
     "packages": [
         {
             "name": "dhii/args-list-validation",
@@ -2003,6 +2003,55 @@
             "time": "2017-01-23T15:08:20+00:00"
         },
         {
+            "name": "dhii/transformer-interface",
+            "version": "v0.1-alpha1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Dhii/transformer-interface.git",
+                "reference": "e774efef46413eb34bdafc19a6bd74fbf656235d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Dhii/transformer-interface/zipball/e774efef46413eb34bdafc19a6bd74fbf656235d",
+                "reference": "e774efef46413eb34bdafc19a6bd74fbf656235d",
+                "shasum": ""
+            },
+            "require": {
+                "dhii/exception-interface": "^0.1 | ^0.2-alpha1",
+                "dhii/factory-interface": "^0.1-alpha1",
+                "php": "^5.3 | ^7.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "<=0.3.2",
+                "dhii/php-cs-fixer-config": "dev-php-5.3",
+                "phpunit/phpunit": "^4.8",
+                "ptrofimov/xpmock": "^1.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-develop": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dhii\\Transformer\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dhii Team",
+                    "email": "development@dhii.co"
+                }
+            ],
+            "description": "Interfaces for data transformation",
+            "time": "2018-05-15T16:59:05+00:00"
+        },
+        {
             "name": "dhii/type-interface",
             "version": "dev-develop",
             "source": {
@@ -2584,16 +2633,16 @@
         },
         {
             "name": "rebelcode/transformers",
-            "version": "dev-task/initial-classes",
+            "version": "v0.1-alpha1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/RebelCode/transformers.git",
-                "reference": "0d2dbae084d77b020771ff608e143173960301e5"
+                "reference": "35b4ad21ac2fc8789218aba9e6d64245da0b90da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/RebelCode/transformers/zipball/0d2dbae084d77b020771ff608e143173960301e5",
-                "reference": "0d2dbae084d77b020771ff608e143173960301e5",
+                "url": "https://api.github.com/repos/RebelCode/transformers/zipball/35b4ad21ac2fc8789218aba9e6d64245da0b90da",
+                "reference": "35b4ad21ac2fc8789218aba9e6d64245da0b90da",
                 "shasum": ""
             },
             "require": {
@@ -2604,6 +2653,7 @@
                 "dhii/iterator-base": "^0.1-alpha3",
                 "dhii/iterator-helper-base": "^0.1-alpha2",
                 "dhii/normalization-helper-base": "^0.1-alpha2",
+                "dhii/transformer-interface": "^0.1-alpha1",
                 "dhii/validation-base": "^0.2-alpha2",
                 "php": "^5.4 | ^7.0"
             },
@@ -2614,6 +2664,11 @@
                 "ptrofimov/xpmock": "^1.1"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-develop": "0.1.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "RebelCode\\Transformers\\": "src"
@@ -2630,7 +2685,7 @@
                 }
             ],
             "description": "A library for transforming input values.",
-            "time": "2018-05-04T16:52:38+00:00"
+            "time": "2018-05-15T17:48:29+00:00"
         }
     ],
     "packages-dev": [
@@ -4484,7 +4539,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "rebelcode/transformers": 20,
         "rebelcode/expression-wp-query-builder": 20
     },
     "prefer-stable": true,

@@ -46,6 +46,7 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/simple-cache-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/sql-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/stringable-interface" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/transformer-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/type-interface" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/validation-abstract" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/dhii/validation-base" />
