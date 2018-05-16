@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "47c54bd7c9e8554e00dbea8c8c7b8464",
+    "content-hash": "dbbc23ce26d40e80cba8ec6b7ff0a85e",
     "packages": [
         {
             "name": "dhii/args-list-validation",
@@ -2637,6 +2637,59 @@
             "time": "2018-05-11T08:25:59+00:00"
         },
         {
+            "name": "rebelcode/sql-cqrs-resource-models-abstract",
+            "version": "v0.1-alpha1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/RebelCode/sql-cqrs-resource-models-abstract.git",
+                "reference": "af88e1c69df6b5c2be84391a6df1d27022a9e52b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/RebelCode/sql-cqrs-resource-models-abstract/zipball/af88e1c69df6b5c2be84391a6df1d27022a9e52b",
+                "reference": "af88e1c69df6b5c2be84391a6df1d27022a9e52b",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.4 | ^7.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "<=0.3.2",
+                "dhii/data-container-interface": "^0.2",
+                "dhii/exception-interface": "0.2-alpha3",
+                "dhii/expression-interface": "^0.2",
+                "dhii/output-renderer-interface": "^0.3",
+                "dhii/php-cs-fixer-config": "^0.1",
+                "dhii/sql-interface": "^0.1",
+                "dhii/stringable-interface": "^0.1",
+                "phpunit/phpunit": "^4.8",
+                "ptrofimov/xpmock": "^1.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-develop": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "RebelCode\\Storage\\Resource\\Sql\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "RebelCode",
+                    "email": "dev@rebelcode.com"
+                }
+            ],
+            "description": "Abstract functionality for SQL CQRS resource models.",
+            "time": "2018-05-16T10:12:48+00:00"
+        },
+        {
             "name": "rebelcode/transformers",
             "version": "v0.1-alpha1",
             "source": {
@@ -2691,6 +2744,70 @@
             ],
             "description": "A library for transforming input values.",
             "time": "2018-05-15T17:48:29+00:00"
+        },
+        {
+            "name": "rebelcode/wp-cqrs-resource-models",
+            "version": "v0.1-alpha1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/RebelCode/wp-cqrs-resource-models.git",
+                "reference": "fa6ed0436ab14c1fe737c8d5a6aa5b2987bf23a6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/RebelCode/wp-cqrs-resource-models/zipball/fa6ed0436ab14c1fe737c8d5a6aa5b2987bf23a6",
+                "reference": "fa6ed0436ab14c1fe737c8d5a6aa5b2987bf23a6",
+                "shasum": ""
+            },
+            "require": {
+                "dhii/callback-abstract": "^0.1-alpha4",
+                "dhii/container-helper-base": "^0.1",
+                "dhii/cqrs-resource-model-interface": "^0.1-alpha2",
+                "dhii/data-container-base": "^0.1",
+                "dhii/exception": "^0.1-alpha4",
+                "dhii/i18n-helper-base": "^0.1",
+                "dhii/iterator-helper-base": "^0.1-alpha2",
+                "dhii/normalization-helper-base": "^0.1",
+                "php": "^5.4 | ^7.0",
+                "rebelcode/expression-wp-query-builder": "^0.1-alpha1",
+                "rebelcode/sql-cqrs-resource-models-abstract": "^0.1-alpha1"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "<=0.3.2",
+                "dhii/expression-interface": "^0.2",
+                "dhii/factory-interface": "^0.1-alpha2",
+                "dhii/invocable-interface": "^0.1-alpha1",
+                "dhii/output-renderer-interface": "^0.3",
+                "dhii/php-cs-fixer-config": "^0.1",
+                "dhii/sql-interface": "^0.1",
+                "dhii/stringable-interface": "^0.1",
+                "johnpbloch/wordpress-core": "^4.0",
+                "phpunit/phpunit": "^4.8",
+                "ptrofimov/xpmock": "^1.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-develop": "0.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "RebelCode\\Storage\\Resource\\WordPress\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "RebelCode",
+                    "email": "dev@rebelcode.com"
+                }
+            ],
+            "description": "Functionality for WordPress CQRS resource models.",
+            "time": "2018-05-16T14:30:00+00:00"
         }
     ],
     "packages-dev": [
