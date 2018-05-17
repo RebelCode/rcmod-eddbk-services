@@ -309,7 +309,7 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
      */
     protected function _processSessionRuleData($serviceId, $ruleData)
     {
-        return [
+        $data = [
             'id' => $this->_containerHas($ruleData, 'id')
                 ? $this->_containerGet($ruleData, 'id')
                 : null,
@@ -325,7 +325,15 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
             'repeat_until_date'   => strtotime($this->_containerGet($ruleData, 'repeatUntilDate')),
             'repeat_weekly_on'    => implode(',', $this->_containerGet($ruleData, 'repeatWeeklyOn')),
             'repeat_monthly_on'   => implode(',', $this->_containerGet($ruleData, 'repeatMonthlyOn')),
-            'exclude_dates'       => implode(',', array_map('strtotime', $this->_containerGet($ruleData, 'excludeDates'))),
         ];
+
+        $excludeDates = [];
+        foreach ($this->_containerGet($ruleData, 'excludeDates') as $_excludeDate) {
+            $excludeDates[] = strtotime(date('Y-m-d', strtotime($_excludeDate)), 0);
+        }
+
+        $data['exclude_dates'] = implode(',', $excludeDates);
+
+        return $data;
     }
 }
