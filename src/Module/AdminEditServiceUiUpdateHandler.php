@@ -329,11 +329,28 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
 
         $excludeDates = [];
         foreach ($this->_containerGet($ruleData, 'excludeDates') as $_excludeDate) {
-            $excludeDates[] = strtotime(date('Y-m-d', strtotime($_excludeDate)), 0);
+            $excludeDates[] = $this->_processExcludeDate($_excludeDate);
         }
 
         $data['exclude_dates'] = implode(',', $excludeDates);
 
         return $data;
+    }
+
+    /**
+     * Processes an exclude data, removing the time and transforming it into a timestamp.
+     *
+     * @since [*next-version*]
+     *
+     * @param string|Stringable $excludeDate The exclude date string, in ISO8601 format.
+     *
+     * @return int|false The timestamp or false on failure.
+     */
+    protected function _processExcludeDate($excludeDate)
+    {
+        $timestamp = strtotime($this->_normalizeString($excludeDate));
+        $datestamp = strtotime(date('Y-m-d', $timestamp));
+
+        return $datestamp;
     }
 }
