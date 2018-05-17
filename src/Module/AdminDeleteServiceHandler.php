@@ -6,6 +6,8 @@ use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
 use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Invocation\InvocableInterface;
 use Dhii\Storage\Resource\DeleteCapableInterface;
+use Dhii\Util\Normalization\NormalizeStringCapableTrait;
+use Dhii\Util\String\StringableInterface as Stringable;
 use Psr\EventManager\EventInterface;
 
 /**
@@ -15,6 +17,9 @@ use Psr\EventManager\EventInterface;
  */
 class AdminDeleteServiceHandler implements InvocableInterface
 {
+    /* @since [*next-version*] */
+    use NormalizeStringCapableTrait;
+
     /* @since [*next-version*] */
     use CreateInvalidArgumentExceptionCapableTrait;
 
@@ -49,19 +54,30 @@ class AdminDeleteServiceHandler implements InvocableInterface
     protected $exprBuilder;
 
     /**
-     * Constructor.
+     * The slug of the services post type.
      *
      * @since [*next-version*]
      *
+     * @var string
+     */
+    protected $postType;
+
+    /**
+     * Constructor.
+     *
+     * @since [*next-version*]
+     * @param string|Stringable      $postType             The slug of the services post type.
      * @param DeleteCapableInterface $sessionsDeleteRm     The sessions DELETE resource model.
      * @param DeleteCapableInterface $sessionRulesDeleteRm The session rules DELETE resource model.
      * @param object                 $exprBuilder          The expression builder.
      */
     public function __construct(
+        $postType,
         DeleteCapableInterface $sessionsDeleteRm,
         DeleteCapableInterface $sessionRulesDeleteRm,
         $exprBuilder
     ) {
+        $this->postType             = $this->_normalizeString($postType);
         $this->sessionsDeleteRm     = $sessionsDeleteRm;
         $this->sessionRulesDeleteRm = $sessionRulesDeleteRm;
         $this->exprBuilder          = $exprBuilder;
@@ -86,7 +102,7 @@ class AdminDeleteServiceHandler implements InvocableInterface
         $postId   = $event->getParam(0);
         $postType = $this->_getPostType($postId);
 
-        if ($postType === 'download') {
+        if ($postType === $this->postType) {
             $b = $this->exprBuilder;
 
             $this->sessionsDeleteRm->delete(

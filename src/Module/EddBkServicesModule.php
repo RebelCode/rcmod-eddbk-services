@@ -94,7 +94,7 @@ class EddBkServicesModule extends AbstractBaseModule
                  * The SELECT RM for services.
                  */
                 'eddbk_services_select_rm' => function (ContainerInterface $c) {
-                    return new ServicesSelectResourceModel();
+                    return new ServicesSelectResourceModel($c->get('services/post_type'));
                 },
 
                 /*
@@ -156,6 +156,7 @@ class EddBkServicesModule extends AbstractBaseModule
                  */
                 'eddbk_admin_delete_service_handler' => function (ContainerInterface $c) {
                     return new AdminDeleteServiceHandler(
+                        $c->get('services/post_type'),
                         $c->get('sessions_delete_rm'),
                         $c->get('session_rules_delete_rm'),
                         $c->get('sql_expression_builder')
