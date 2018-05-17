@@ -94,7 +94,7 @@ class EddBkServicesModule extends AbstractBaseModule
                  * The SELECT RM for services.
                  */
                 'eddbk_services_select_rm' => function (ContainerInterface $c) {
-                    return new ServicesSelectResourceModel();
+                    return new ServicesSelectResourceModel($c->get('services/post_type'));
                 },
 
                 /*
@@ -146,6 +146,20 @@ class EddBkServicesModule extends AbstractBaseModule
                     return new AdminBookingsUiServicesHandler(
                         $c->get('eddbk_services_select_rm'),
                         $c->get('eddbk_service_list_transformer')
+                    );
+                },
+
+                /**
+                 * The handler for handling service deletion.
+                 *
+                 * @since [*next-version*]
+                 */
+                'eddbk_admin_delete_service_handler' => function (ContainerInterface $c) {
+                    return new AdminDeleteServiceHandler(
+                        $c->get('services/post_type'),
+                        $c->get('sessions_delete_rm'),
+                        $c->get('session_rules_delete_rm'),
+                        $c->get('sql_expression_builder')
                     );
                 },
 
@@ -438,6 +452,8 @@ class EddBkServicesModule extends AbstractBaseModule
 
         // Event for providing the booking services for the admin bookings UI
         $this->_attach('eddbk_admin_bookings_ui_services', $c->get('eddbk_admin_bookings_ui_services_handler'));
+
+        $this->_attach('before_delete_post', $c->get('eddbk_admin_delete_service_handler'));
     }
 
     /**

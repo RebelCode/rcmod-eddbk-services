@@ -13,6 +13,7 @@ use Dhii\Storage\Resource\Sql\EntityFieldInterface;
 use Dhii\Util\Normalization\NormalizeArrayCapableTrait;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
+use Dhii\Util\String\StringableInterface as Stringable;
 use RebelCode\Storage\Resource\WordPress\Posts\ExtractPostIdsFromExpressionCapableTrait;
 use RebelCode\WordPress\Query\Builder\BuildWpQueryArgsCapableTrait;
 use RebelCode\WordPress\Query\Builder\BuildWpQueryCompareCapableTrait;
@@ -90,6 +91,27 @@ class ServicesSelectResourceModel implements SelectCapableInterface
     use StringTranslatingTrait;
 
     /**
+     * The slug of the services post type.
+     *
+     * @since [*next-version*]
+     *
+     * @var string
+     */
+    protected $postType;
+
+    /**
+     * Constructor.
+     *
+     * @since [*next-version*]
+     *
+     * @param string|Stringable $postType The slug of the services post type.
+     */
+    public function __construct($postType)
+    {
+        $this->postType = $this->_normalizeString($postType);
+    }
+
+    /**
      * {@inheritdoc}
      *
      * @since [*next-version*]
@@ -134,7 +156,7 @@ class ServicesSelectResourceModel implements SelectCapableInterface
     protected function _getDefaultWpQueryArgs()
     {
         return [
-            'post_type'   => 'download',
+            'post_type'   => $this->postType,
             'post_status' => ['publish', 'draft', 'private', 'future'],
         ];
     }
