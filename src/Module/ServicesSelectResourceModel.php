@@ -285,7 +285,7 @@ class ServicesSelectResourceModel implements SelectCapableInterface
      */
     protected function _getPostEntityName()
     {
-        return 'post';
+        return 'service';
     }
 
     /**
