@@ -149,6 +149,19 @@ class EddBkServicesModule extends AbstractBaseModule
                     );
                 },
 
+                /**
+                 * The handler for handling service deletion.
+                 *
+                 * @since [*next-version*]
+                 */
+                'eddbk_admin_delete_service_handler' => function (ContainerInterface $c) {
+                    return new AdminDeleteServiceHandler(
+                        $c->get('sessions_delete_rm'),
+                        $c->get('session_rules_delete_rm'),
+                        $c->get('sql_expression_builder')
+                    );
+                },
+
                 /*
                  * The transformer for transforming lists of services.
                  *
