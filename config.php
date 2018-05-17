@@ -3,7 +3,7 @@
 return [
     'services' => [
         'session_rules' => [
-            'datetime_format' => DATE_ISO8601
+            'datetime_format' => DATE_ATOM
         ]
     ]
 ];
