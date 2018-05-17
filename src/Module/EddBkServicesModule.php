@@ -451,6 +451,8 @@ class EddBkServicesModule extends AbstractBaseModule
 
         // Event for providing the booking services for the admin bookings UI
         $this->_attach('eddbk_admin_bookings_ui_services', $c->get('eddbk_admin_bookings_ui_services_handler'));
+
+        $this->_attach('before_delete_post', $c->get('eddbk_admin_delete_service_handler'));
     }
 
     /**
