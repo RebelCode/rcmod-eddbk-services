@@ -258,7 +258,7 @@ class EddBkServicesModule extends AbstractBaseModule
                  */
                 'eddbk_price_transformer' => function (ContainerInterface $c) {
                     return new CallbackTransformer(function($price) use ($c) {
-                        return edd_currency_filter(edd_format_amount($price));
+                        return html_entity_decode(edd_currency_filter(edd_format_amount($price)));
                     });
                 },
 
