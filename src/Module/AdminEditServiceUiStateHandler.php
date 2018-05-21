@@ -147,7 +147,7 @@ class AdminEditServiceUiStateHandler implements InvocableInterface
         // Get the service
         $services = $this->servicesSelectRm->select($b->and(
             $b->eq(
-                $b->ef('post', 'id'),
+                $b->ef('service', 'id'),
                 $b->lit($serviceId)
             )
         ));
