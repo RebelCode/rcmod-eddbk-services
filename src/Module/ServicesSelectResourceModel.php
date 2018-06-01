@@ -335,7 +335,7 @@ class ServicesSelectResourceModel implements SelectCapableInterface
      */
     protected function _getPostTitle($post)
     {
-        return $post->post_content;
+        return $post->post_title;
     }
 
     /**
