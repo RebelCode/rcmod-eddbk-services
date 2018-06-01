@@ -335,7 +335,7 @@ class ServicesSelectResourceModel implements SelectCapableInterface
      */
     protected function _getPostTitle($id)
     {
-        return get_the_title($id);
+        return \get_the_title($id);
     }
 
     /**
@@ -349,7 +349,7 @@ class ServicesSelectResourceModel implements SelectCapableInterface
      */
     protected function _getPostExcerpt($id)
     {
-        return get_the_excerpt($id);
+        return \get_the_excerpt($id);
     }
 
     /**
@@ -363,7 +363,7 @@ class ServicesSelectResourceModel implements SelectCapableInterface
      */
     protected function _getPostImageUrl($id)
     {
-        return get_the_post_thumbnail_url($id);
+        return \get_the_post_thumbnail_url($id);
     }
 
     /**
@@ -379,7 +379,7 @@ class ServicesSelectResourceModel implements SelectCapableInterface
      */
     protected function _getPostMeta($id, $metaKey, $default = '')
     {
-        $metaValue = get_post_meta($id, $metaKey, true);
+        $metaValue = \get_post_meta($id, $metaKey, true);
 
         return ($metaValue === '')
             ? $default
@@ -393,10 +393,10 @@ class ServicesSelectResourceModel implements SelectCapableInterface
      *
      * @param array $args The arguments.
      *
-     * @return WP_Post[]|stdClass|Traversable
+     * @return \WP_Post[]|stdClass|Traversable
      */
     protected function _queryPosts($args)
     {
-        return get_posts($args);
+        return \get_posts($args);
     }
 }
