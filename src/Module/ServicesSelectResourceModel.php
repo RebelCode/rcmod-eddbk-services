@@ -136,6 +136,8 @@ class ServicesSelectResourceModel implements SelectCapableInterface
             $services[] = [
                 'id'               => $_id,
                 'name'             => html_entity_decode($this->_getPostTitle($_id)),
+                'description'      => html_entity_decode($this->_getPostExcerpt($_id)),
+                'image_url'        => $this->_getPostImageUrl($_id),
                 'bookings_enabled' => $this->_getPostMeta($_id, 'eddbk_bookings_enabled', false),
                 'session_lengths'  => $this->_getPostMeta($_id, 'eddbk_session_lengths', []),
                 'display_options'  => $this->_getPostMeta($_id, 'eddbk_display_options', []),
@@ -334,6 +336,34 @@ class ServicesSelectResourceModel implements SelectCapableInterface
     protected function _getPostTitle($id)
     {
         return get_the_title($id);
+    }
+
+    /**
+     * Retrieves the excerpt for a WordPress post.
+     *
+     * @since [*next-version*]
+     *
+     * @param int|string $id The ID of the service.
+     *
+     * @return string The post excerpt.
+     */
+    protected function _getPostExcerpt($id)
+    {
+        return get_the_excerpt($id);
+    }
+
+    /**
+     * Retrieves the featured image url for a WordPress post.
+     *
+     * @since [*next-version*]
+     *
+     * @param int|string $id The ID of the service.
+     *
+     * @return string The post image source url.
+     */
+    protected function _getPostImageUrl($id)
+    {
+        return get_the_post_thumbnail_url($id);
     }
 
     /**
