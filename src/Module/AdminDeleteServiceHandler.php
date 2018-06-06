@@ -66,6 +66,7 @@ class AdminDeleteServiceHandler implements InvocableInterface
      * Constructor.
      *
      * @since [*next-version*]
+     *
      * @param string|Stringable      $postType             The slug of the services post type.
      * @param DeleteCapableInterface $sessionsDeleteRm     The sessions DELETE resource model.
      * @param DeleteCapableInterface $sessionRulesDeleteRm The session rules DELETE resource model.

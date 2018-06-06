@@ -161,7 +161,7 @@ class ServicesSelectResourceModel implements SelectCapableInterface
             'post_type'   => $this->postType,
             'post_status' => ['publish', 'draft', 'private', 'future'],
             'meta_key'    => 'eddbk_bookings_enabled',
-            'meta_value'  => '1'
+            'meta_value'  => '1',
         ];
     }
 
