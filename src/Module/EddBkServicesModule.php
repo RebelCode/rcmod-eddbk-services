@@ -149,7 +149,7 @@ class EddBkServicesModule extends AbstractBaseModule
                     );
                 },
 
-                /**
+                /*
                  * The handler for handling service deletion.
                  *
                  * @since [*next-version*]
@@ -230,11 +230,11 @@ class EddBkServicesModule extends AbstractBaseModule
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_session_length_list_transformer' => function(ContainerInterface $c) {
+                'eddbk_session_length_list_transformer' => function (ContainerInterface $c) {
                     return new CallbackTransformer(function ($sessionLengths) use ($c) {
-                        $iterator    = $this->_normalizeIterator($sessionLengths);
+                        $iterator = $this->_normalizeIterator($sessionLengths);
                         $transformer = $c->get('eddbk_session_length_transformer');
-                        $result      = new TransformerIterator($iterator, $transformer);
+                        $result = new TransformerIterator($iterator, $transformer);
 
                         return iterator_to_array($result);
                     });
@@ -245,7 +245,7 @@ class EddBkServicesModule extends AbstractBaseModule
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_session_length_transformer' => function(ContainerInterface $c) {
+                'eddbk_session_length_transformer' => function (ContainerInterface $c) {
                     return new MapTransformer([
                         [
                             MapTransformer::K_SOURCE => 'sessionLength',
@@ -253,7 +253,7 @@ class EddBkServicesModule extends AbstractBaseModule
                         [
                             MapTransformer::K_SOURCE      => 'price',
                             MapTransformer::K_TRANSFORMER => $c->get('eddbk_session_length_price_transformer'),
-                        ]
+                        ],
                     ]);
                 },
 
@@ -263,11 +263,11 @@ class EddBkServicesModule extends AbstractBaseModule
                  * @since [*next-version*]
                  */
                 'eddbk_session_length_price_transformer' => function (ContainerInterface $c) {
-                    return new CallbackTransformer(function($price) use ($c) {
+                    return new CallbackTransformer(function ($price) use ($c) {
                         return [
                             'amount'    => $price,
                             'currency'  => edd_get_currency(),
-                            'formatted' => $c->get('eddbk_price_transformer')->transform($price)
+                            'formatted' => $c->get('eddbk_price_transformer')->transform($price),
                         ];
                     });
                 },
@@ -278,7 +278,7 @@ class EddBkServicesModule extends AbstractBaseModule
                  * @since [*next-version*]
                  */
                 'eddbk_price_transformer' => function (ContainerInterface $c) {
-                    return new CallbackTransformer(function($price) use ($c) {
+                    return new CallbackTransformer(function ($price) use ($c) {
                         return html_entity_decode(edd_currency_filter(edd_format_amount($price)));
                     });
                 },
@@ -298,9 +298,8 @@ class EddBkServicesModule extends AbstractBaseModule
                             $rules = $this->_normalizeArray($transformed);
                         }
 
-
                         return [
-                            'rules' => $rules
+                            'rules' => $rules,
                         ];
                     });
                 },
@@ -436,6 +435,42 @@ class EddBkServicesModule extends AbstractBaseModule
                         return $this->_normalizeArray($transformIterator);
                     });
                 },
+
+                /*
+                 * The handler that changes the Download price to the smallest session length's price.
+                 *
+                 * @since [*next-version*]
+                 */
+                'eddbk_get_service_price_handler' => function (ContainerInterface $c) {
+                    return new GetServicePriceHandler(
+                        $c->get('eddbk_services_select_rm'),
+                        $c->get('sql_expression_builder')
+                    );
+                },
+
+                /*
+                 * The handler that changes the Download price options to the session length prices.
+                 *
+                 * @since [*next-version*]
+                 */
+                'eddbk_get_service_price_options_handler' => function (ContainerInterface $c) {
+                    return new GetServicePriceOptionsHandler(
+                        $c->get('eddbk_services_select_rm'),
+                        $c->get('sql_expression_builder')
+                    );
+                },
+
+                /*
+                 * The handler that filters the Download price options flag.
+                 *
+                 * @since [*next-version*]
+                 */
+                'eddbk_get_service_has_price_options_handler' => function (ContainerInterface $c) {
+                    return new GetServiceHasPriceOptionsHandler(
+                        $c->get('eddbk_services_select_rm'),
+                        $c->get('sql_expression_builder')
+                    );
+                },
             ]
         );
     }
@@ -460,7 +495,17 @@ class EddBkServicesModule extends AbstractBaseModule
         // Event for providing the booking services for the admin bookings UI
         $this->_attach('eddbk_admin_bookings_ui_services', $c->get('eddbk_admin_bookings_ui_services_handler'));
 
+        // Event for deleting service-related entities when a Download is deleted
         $this->_attach('before_delete_post', $c->get('eddbk_admin_delete_service_handler'));
+
+        // Event for the filtering a Download's price
+        $this->_attach('edd_get_download_price', $c->get('eddbk_get_service_price_handler'));
+
+        // Event for the filtering a Download's price options
+        $this->_attach('edd_get_variable_prices', $c->get('eddbk_get_service_price_options_handler'));
+
+        // Event for the filtering a Download's price options flag
+        $this->_attach('edd_has_variable_prices', $c->get('eddbk_get_service_has_price_options_handler'));
     }
 
     /**
