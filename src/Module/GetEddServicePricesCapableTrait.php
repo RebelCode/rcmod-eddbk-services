@@ -3,6 +3,7 @@
 namespace RebelCode\EddBookings\Services\Module;
 
 use ArrayAccess;
+use Carbon\CarbonInterval;
 use Dhii\Storage\Resource\SelectCapableInterface;
 use InvalidArgumentException;
 use Psr\Container\ContainerExceptionInterface;
@@ -55,10 +56,14 @@ trait GetEddServicePricesCapableTrait
         $index   = 0;
 
         foreach ($lengths as $_lengthInfo) {
+            $_length = (int) $this->_containerGet($_lengthInfo, 'sessionLength');
+            $_name   = CarbonInterval::seconds($_length)->cascade()->forHumans();
+            $_price  = (float) $this->_containerGet($_lengthInfo, 'price');
+
             $prices[] = [
                 'index'  => ++$index,
-                'name'   => $this->_containerGet($_lengthInfo, 'sessionLength'),
-                'amount' => $this->_containerGet($_lengthInfo, 'price'),
+                'name'   => $_name,
+                'amount' => $_price,
             ];
         }
 
