@@ -71,7 +71,6 @@
       <path value="$PROJECT_DIR$/vendor/psr/container" />
       <path value="$PROJECT_DIR$/vendor/guzzlehttp/psr7" />
       <path value="$PROJECT_DIR$/vendor/psr/http-message" />
-      <path value="$PROJECT_DIR$/vendor/dhii/cqrs-resource-model-interface" />
       <path value="$PROJECT_DIR$/vendor/dhii/iterator-interface" />
       <path value="$PROJECT_DIR$/vendor/dhii/iterator-abstract" />
       <path value="$PROJECT_DIR$/vendor/dhii/data-hierarchy-interface" />

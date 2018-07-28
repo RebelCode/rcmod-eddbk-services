@@ -17,7 +17,7 @@
         "rebelcode/transformers": "^0.1-alpha1",
         "rebelcode/wp-cqrs-resource-models": "^0.1-alpha1",
         "rebelcode/expression-wp-query-builder": "^0.1-alpha1",
-        "dhii/cqrs-resource-model-interface": "^0.1-alpha2",
+        "dhii/cqrs-resource-model-interface": "^0.2-alpha1",
         "dhii/iterator-helper-base": "^0.1-alpha2",
         "dhii/memoize-memory": "^0.2-alpha1",
         "guzzlehttp/psr7": "^1.4",
