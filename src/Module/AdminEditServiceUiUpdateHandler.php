@@ -272,7 +272,8 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
         $serviceIdExpr = $b->eq($b->var('service_id'), $b->lit($serviceId));
 
         // Get the service's timezone
-        $services  = $this->servicesSelectRm->select($serviceIdExpr);
+        // Note: the WP Query SELECT RMs only support AND top-level expressions
+        $services  = $this->servicesSelectRm->select($b->and($serviceIdExpr));
         $service   = reset($services);
         $serviceTz = $this->_containerGet($service, 'timezone');
 
