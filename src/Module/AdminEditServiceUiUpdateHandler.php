@@ -268,11 +268,18 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
     protected function _updateSessionRules($serviceId, $newRules)
     {
         $b = $this->exprBuilder;
+        // Expression for matching the service by its ID
+        $serviceIdExpr = $b->eq($b->var('service_id'), $b->lit($serviceId));
+
+        // Get the service's timezone
+        $services  = $this->servicesSelectRm->select($serviceIdExpr);
+        $service   = reset($services);
+        $serviceTz = $this->_containerGet($service, 'timezone');
 
         $ruleIds = [];
 
         foreach ($newRules as $_ruleData) {
-            $_rule   = $this->_processSessionRuleData($serviceId, $_ruleData);
+            $_rule   = $this->_processSessionRuleData($serviceId, $_ruleData, $serviceTz);
             $_ruleId = $this->_containerHas($_rule, 'id')
                 ? $this->_containerGet($_rule, 'id')
                 : null;
@@ -292,11 +299,9 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
             $ruleIds[] = $_ruleId;
         }
 
-        // Condition to remove the rules for this service
-        $expr = $b->eq($b->var('service_id'), $b->lit($serviceId));
         // If rules were added/updated, ignore them in the condition
         if (count($ruleIds) > 0) {
-            $expr = $b->and($expr, $b->not(
+            $serviceIdExpr = $b->and($serviceIdExpr, $b->not(
                 $b->in(
                     $b->var('id'),
                     $b->set($ruleIds)
@@ -304,7 +309,7 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
             ));
         }
         // Delete the sessions according to the above condition
-        $this->sessionRulesDeleteRm->delete($expr);
+        $this->sessionRulesDeleteRm->delete($serviceIdExpr);
 
         // Trigger session generation
         $this->_trigger('eddbk_generate_sessions', [
