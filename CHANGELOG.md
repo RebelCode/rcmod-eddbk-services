@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
+### Added
+- Added `ext-json` as a Composer dependency.
+
 ### Changed
 - Removed the WordPress query post limit of 5 posts when querying for services without a specific limit.
 
