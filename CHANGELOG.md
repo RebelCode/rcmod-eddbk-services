@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
+### Changed
+- Removed the WordPress query post limit of 5 posts when querying for services without a specific limit.
 
 ## [0.1-alpha5] - 2018-08-01
 ### Changed
