@@ -158,10 +158,11 @@ class ServicesSelectResourceModel implements SelectCapableInterface
     protected function _getDefaultWpQueryArgs()
     {
         return [
-            'post_type'   => $this->postType,
-            'post_status' => ['publish', 'draft', 'private', 'future'],
-            'meta_key'    => 'eddbk_bookings_enabled',
-            'meta_value'  => '1',
+            'post_type'      => $this->postType,
+            'post_status'    => ['publish', 'draft', 'private', 'future'],
+            'meta_key'       => 'eddbk_bookings_enabled',
+            'meta_value'     => '1',
+            'posts_per_page' => -1
         ];
     }
 
