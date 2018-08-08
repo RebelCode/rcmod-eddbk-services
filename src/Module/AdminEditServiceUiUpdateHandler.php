@@ -19,6 +19,7 @@ use Dhii\Iterator\CountIterableCapableTrait;
 use Dhii\Iterator\ResolveIteratorCapableTrait;
 use Dhii\Storage\Resource\DeleteCapableInterface;
 use Dhii\Storage\Resource\InsertCapableInterface;
+use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Storage\Resource\UpdateCapableInterface;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
@@ -110,6 +111,15 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
     protected $response;
 
     /**
+     * The services SELECT RM.
+     *
+     * @since [*next-version*]
+     *
+     * @var SelectCapableInterface
+     */
+    protected $servicesSelectRm;
+
+    /**
      * The services UPDATE RM.
      *
      * @since [*next-version*]
@@ -161,6 +171,7 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
      *
      * @param ServerRequestInterface $request              The request.
      * @param ResponseInterface      $response             The response.
+     * @param SelectCapableInterface $servicesSelectRm     The SELECT resource model for services.
      * @param UpdateCapableInterface $servicesUpdateRm     The UPDATE resource model for services.
      * @param InsertCapableInterface $sessionRulesInsertRm The INSERT resource model for session rules.
      * @param UpdateCapableInterface $sessionRulesUpdateRm The UPDATE resource model for session rules.
@@ -172,6 +183,7 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
     public function __construct(
         ServerRequestInterface $request,
         ResponseInterface $response,
+        SelectCapableInterface $servicesSelectRm,
         UpdateCapableInterface $servicesUpdateRm,
         InsertCapableInterface $sessionRulesInsertRm,
         UpdateCapableInterface $sessionRulesUpdateRm,
@@ -185,6 +197,7 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
 
         $this->request              = $request;
         $this->response             = $response;
+        $this->servicesSelectRm = $servicesSelectRm;
         $this->servicesUpdateRm     = $servicesUpdateRm;
         $this->exprBuilder          = $exprBuilder;
         $this->sessionRulesInsertRm = $sessionRulesInsertRm;
