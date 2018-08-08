@@ -3,6 +3,8 @@
 namespace RebelCode\EddBookings\Services\Module;
 
 use ArrayAccess;
+use Carbon\Carbon;
+use DateTimeZone;
 use Dhii\Data\Container\ContainerGetCapableTrait;
 use Dhii\Data\Container\ContainerHasCapableTrait;
 use Dhii\Data\Container\CreateContainerExceptionCapableTrait;
@@ -317,19 +319,36 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
      *
      * @param int|string|Stringable      $serviceId The ID of the service.
      * @param array|stdClass|Traversable $ruleData  The session rule data that was received.
+     * @param string|Stringable          $serviceTz The service timezone name.
      *
      * @return array|stdClass|ArrayAccess|ContainerInterface The processed session rule data.
      */
-    protected function _processSessionRuleData($serviceId, $ruleData)
+    protected function _processSessionRuleData($serviceId, $ruleData, $serviceTz)
     {
+        $allDay   = $this->_containerGet($ruleData, 'isAllDay');
+
+        // Parse the service timezone name into a timezone object
+        $timezoneName = $this->_normalizeString($serviceTz);
+        $timezone     = empty($timezoneName) ? null : new DateTimeZone($timezoneName);
+
+        // Get the start ISO 8601 string, parse it and normalize it to the beginning of the day if required
+        $startIso8601    = $this->_containerGet($ruleData, 'start');
+        $startDatetime   = Carbon::parse($startIso8601, $timezone);
+        $startNormalized = ($allDay) ? $startDatetime->startOfDay() : $startDatetime;
+
+        // Get the end ISO 8601 string, parse it and normalize it to the end of the day if required
+        $endIso8601    = $this->_containerGet($ruleData, 'end');
+        $endDateTime   = Carbon::parse($endIso8601, $timezone);
+        $endNormalized = ($allDay) ? $endDateTime->endOfDay() : $endDateTime;
+
         $data = [
             'id' => $this->_containerHas($ruleData, 'id')
                 ? $this->_containerGet($ruleData, 'id')
                 : null,
             'service_id'          => $serviceId,
-            'start'               => strtotime($this->_containerGet($ruleData, 'start')),
-            'end'                 => strtotime($this->_containerGet($ruleData, 'end')),
-            'all_day'             => $this->_containerGet($ruleData, 'isAllDay'),
+            'start'               => $startNormalized->getTimestamp(),
+            'end'                 => $endNormalized->getTimestamp(),
+            'all_day'             => $allDay,
             'repeat'              => $this->_containerGet($ruleData, 'repeat'),
             'repeat_period'       => $this->_containerGet($ruleData, 'repeatPeriod'),
             'repeat_unit'         => $this->_containerGet($ruleData, 'repeatUnit'),
