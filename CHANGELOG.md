@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
 ### Added
+- When saving a service, the dates and times for its rules are normalized against the service's timezone.
 - Added `ext-json` as a Composer dependency.
 
 ### Changed

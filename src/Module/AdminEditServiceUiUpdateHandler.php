@@ -3,6 +3,8 @@
 namespace RebelCode\EddBookings\Services\Module;
 
 use ArrayAccess;
+use Carbon\Carbon;
+use DateTimeZone;
 use Dhii\Data\Container\ContainerGetCapableTrait;
 use Dhii\Data\Container\ContainerHasCapableTrait;
 use Dhii\Data\Container\CreateContainerExceptionCapableTrait;
@@ -19,6 +21,7 @@ use Dhii\Iterator\CountIterableCapableTrait;
 use Dhii\Iterator\ResolveIteratorCapableTrait;
 use Dhii\Storage\Resource\DeleteCapableInterface;
 use Dhii\Storage\Resource\InsertCapableInterface;
+use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Storage\Resource\UpdateCapableInterface;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
@@ -110,6 +113,15 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
     protected $response;
 
     /**
+     * The services SELECT RM.
+     *
+     * @since [*next-version*]
+     *
+     * @var SelectCapableInterface
+     */
+    protected $servicesSelectRm;
+
+    /**
      * The services UPDATE RM.
      *
      * @since [*next-version*]
@@ -161,6 +173,7 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
      *
      * @param ServerRequestInterface $request              The request.
      * @param ResponseInterface      $response             The response.
+     * @param SelectCapableInterface $servicesSelectRm     The SELECT resource model for services.
      * @param UpdateCapableInterface $servicesUpdateRm     The UPDATE resource model for services.
      * @param InsertCapableInterface $sessionRulesInsertRm The INSERT resource model for session rules.
      * @param UpdateCapableInterface $sessionRulesUpdateRm The UPDATE resource model for session rules.
@@ -172,6 +185,7 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
     public function __construct(
         ServerRequestInterface $request,
         ResponseInterface $response,
+        SelectCapableInterface $servicesSelectRm,
         UpdateCapableInterface $servicesUpdateRm,
         InsertCapableInterface $sessionRulesInsertRm,
         UpdateCapableInterface $sessionRulesUpdateRm,
@@ -185,6 +199,7 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
 
         $this->request              = $request;
         $this->response             = $response;
+        $this->servicesSelectRm = $servicesSelectRm;
         $this->servicesUpdateRm     = $servicesUpdateRm;
         $this->exprBuilder          = $exprBuilder;
         $this->sessionRulesInsertRm = $sessionRulesInsertRm;
@@ -253,11 +268,19 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
     protected function _updateSessionRules($serviceId, $newRules)
     {
         $b = $this->exprBuilder;
+        // Expression for matching the service by its ID
+        $serviceIdExpr = $b->eq($b->var('service_id'), $b->lit($serviceId));
+
+        // Get the service's timezone
+        // Note: the WP Query SELECT RMs only support AND top-level expressions
+        $services  = $this->servicesSelectRm->select($b->and($serviceIdExpr));
+        $service   = reset($services);
+        $serviceTz = $this->_containerGet($service, 'timezone');
 
         $ruleIds = [];
 
         foreach ($newRules as $_ruleData) {
-            $_rule   = $this->_processSessionRuleData($serviceId, $_ruleData);
+            $_rule   = $this->_processSessionRuleData($serviceId, $_ruleData, $serviceTz);
             $_ruleId = $this->_containerHas($_rule, 'id')
                 ? $this->_containerGet($_rule, 'id')
                 : null;
@@ -277,11 +300,9 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
             $ruleIds[] = $_ruleId;
         }
 
-        // Condition to remove the rules for this service
-        $expr = $b->eq($b->var('service_id'), $b->lit($serviceId));
         // If rules were added/updated, ignore them in the condition
         if (count($ruleIds) > 0) {
-            $expr = $b->and($expr, $b->not(
+            $serviceIdExpr = $b->and($serviceIdExpr, $b->not(
                 $b->in(
                     $b->var('id'),
                     $b->set($ruleIds)
@@ -289,7 +310,7 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
             ));
         }
         // Delete the sessions according to the above condition
-        $this->sessionRulesDeleteRm->delete($expr);
+        $this->sessionRulesDeleteRm->delete($serviceIdExpr);
 
         // Trigger session generation
         $this->_trigger('eddbk_generate_sessions', [
@@ -304,19 +325,36 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
      *
      * @param int|string|Stringable      $serviceId The ID of the service.
      * @param array|stdClass|Traversable $ruleData  The session rule data that was received.
+     * @param string|Stringable          $serviceTz The service timezone name.
      *
      * @return array|stdClass|ArrayAccess|ContainerInterface The processed session rule data.
      */
-    protected function _processSessionRuleData($serviceId, $ruleData)
+    protected function _processSessionRuleData($serviceId, $ruleData, $serviceTz)
     {
+        $allDay   = $this->_containerGet($ruleData, 'isAllDay');
+
+        // Parse the service timezone name into a timezone object
+        $timezoneName = $this->_normalizeString($serviceTz);
+        $timezone     = empty($timezoneName) ? null : new DateTimeZone($timezoneName);
+
+        // Get the start ISO 8601 string, parse it and normalize it to the beginning of the day if required
+        $startIso8601    = $this->_containerGet($ruleData, 'start');
+        $startDatetime   = Carbon::parse($startIso8601, $timezone);
+        $startNormalized = ($allDay) ? $startDatetime->startOfDay() : $startDatetime;
+
+        // Get the end ISO 8601 string, parse it and normalize it to the end of the day if required
+        $endIso8601    = $this->_containerGet($ruleData, 'end');
+        $endDateTime   = Carbon::parse($endIso8601, $timezone);
+        $endNormalized = ($allDay) ? $endDateTime->endOfDay() : $endDateTime;
+
         $data = [
             'id' => $this->_containerHas($ruleData, 'id')
                 ? $this->_containerGet($ruleData, 'id')
                 : null,
             'service_id'          => $serviceId,
-            'start'               => strtotime($this->_containerGet($ruleData, 'start')),
-            'end'                 => strtotime($this->_containerGet($ruleData, 'end')),
-            'all_day'             => $this->_containerGet($ruleData, 'isAllDay'),
+            'start'               => $startNormalized->getTimestamp(),
+            'end'                 => $endNormalized->getTimestamp(),
+            'all_day'             => $allDay,
             'repeat'              => $this->_containerGet($ruleData, 'repeat'),
             'repeat_period'       => $this->_containerGet($ruleData, 'repeatPeriod'),
             'repeat_unit'         => $this->_containerGet($ruleData, 'repeatUnit'),

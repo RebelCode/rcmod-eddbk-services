@@ -113,6 +113,7 @@ class EddBkServicesModule extends AbstractBaseModule
                     return new AdminEditServiceUiUpdateHandler(
                         $c->get('server_request'),
                         $c->get('server_response'),
+                        $c->get('eddbk_services_select_rm'),
                         $c->get('eddbk_services_update_rm'),
                         $c->get('session_rules_insert_rm'),
                         $c->get('session_rules_update_rm'),
