@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [[*next-version*]] - YYYY-MM-DD
 ### Added
 - When saving a service, the dates and times for its rules are normalized against the service's timezone.
+- Added `ext-json` as a Composer dependency.
+
+### Changed
+- Removed the WordPress query post limit of 5 posts when querying for services without a specific limit.
 
 ## [0.1-alpha5] - 2018-08-01
 ### Changed

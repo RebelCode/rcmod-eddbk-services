@@ -13,6 +13,7 @@
     "prefer-stable": true,
     "require": {
         "php": "^5.4 | ^7.0",
+        "ext-json": ">=1.2.1",
         "rebelcode/modular": "^0.1-alpha1",
         "rebelcode/transformers": "^0.1-alpha1",
         "rebelcode/wp-cqrs-resource-models": "^0.2-alpha1",
