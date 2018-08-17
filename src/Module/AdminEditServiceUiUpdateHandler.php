@@ -370,7 +370,7 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
 
         $excludeDates = [];
         foreach ($this->_containerGet($ruleData, 'excludeDates') as $_excludeDate) {
-            $excludeDates[] = $this->_processExcludeDate($_excludeDate);
+            $excludeDates[] = $this->_processExcludeDate($_excludeDate, $timezone);
         }
 
         $data['exclude_dates'] = implode(',', $excludeDates);
@@ -379,20 +379,21 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
     }
 
     /**
-     * Processes an exclude data, removing the time and transforming it into a timestamp.
+     * Processes an excluded date to transform it into a timestamp.
      *
      * @since [*next-version*]
      *
      * @param string|Stringable $excludeDate The exclude date string, in ISO8601 format.
+     * @param DateTimeZone      $timezone    The service timezone.
      *
-     * @return int|false The timestamp or false on failure.
+     * @return int|false The timestamp.
      */
-    protected function _processExcludeDate($excludeDate)
+    protected function _processExcludeDate($excludeDate, $timezone)
     {
-        $timestamp = strtotime($this->_normalizeString($excludeDate));
-        $datestamp = strtotime(date('Y-m-d', $timestamp));
+        $datetime  = Carbon::parse($this->_normalizeString($excludeDate), $timezone);
+        $timestamp = $datetime->getTimestamp();
 
-        return $datestamp;
+        return $timestamp;
     }
 
     /**
