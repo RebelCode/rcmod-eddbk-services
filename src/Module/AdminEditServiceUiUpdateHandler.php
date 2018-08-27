@@ -343,20 +343,18 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
         // Get the start ISO 8601 string, parse it and normalize it to the beginning of the day if required
         $startIso8601    = $this->_containerGet($ruleData, 'start');
         $startDatetime   = Carbon::parse($startIso8601, $timezone);
-        $startNormalized = ($allDay) ? $startDatetime->startOfDay() : $startDatetime;
 
         // Get the end ISO 8601 string, parse it and normalize it to the end of the day if required
         $endIso8601    = $this->_containerGet($ruleData, 'end');
         $endDateTime   = Carbon::parse($endIso8601, $timezone);
-        $endNormalized = ($allDay) ? $endDateTime->endOfDay() : $endDateTime;
 
         $data = [
             'id' => $this->_containerHas($ruleData, 'id')
                 ? $this->_containerGet($ruleData, 'id')
                 : null,
             'service_id'          => $serviceId,
-            'start'               => $startNormalized->getTimestamp(),
-            'end'                 => $endNormalized->getTimestamp(),
+            'start'               => $startDatetime->getTimestamp(),
+            'end'                 => $endDateTime->getTimestamp(),
             'all_day'             => $allDay,
             'repeat'              => $this->_containerGet($ruleData, 'repeat'),
             'repeat_period'       => $this->_containerGet($ruleData, 'repeatPeriod'),
