@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
+### Changed
+- Availability rule `start` and `end` datetimes are no longer normalized according to the `all_day` option.
 
 ## [0.1-alpha8] - 2018-08-24
 ### Fixed
