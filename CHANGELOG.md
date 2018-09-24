@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
+
+## [0.1-alpha10] - 2018-09-24
 ### Changed
 - The Services `SELECT` CQRS resource model now queries for published Downloads only by default.
 
