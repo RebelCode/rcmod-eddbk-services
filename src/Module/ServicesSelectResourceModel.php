@@ -14,6 +14,7 @@ use Dhii\Util\Normalization\NormalizeArrayCapableTrait;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use Dhii\Util\String\StringableInterface as Stringable;
+use InvalidArgumentException;
 use RebelCode\Storage\Resource\WordPress\Posts\ExtractPostIdsFromExpressionCapableTrait;
 use RebelCode\WordPress\Query\Builder\BuildWpQueryArgsCapableTrait;
 use RebelCode\WordPress\Query\Builder\BuildWpQueryCompareCapableTrait;
@@ -173,7 +174,14 @@ class ServicesSelectResourceModel implements SelectCapableInterface
      */
     protected function _buildWpQueryCompare(LogicalExpressionInterface $expression)
     {
-        $postIds = $this->_extractPostIdsFromExpression($expression);
+        try {
+            $postIds = $this->_extractPostIdsFromExpression($expression);
+        } catch (InvalidArgumentException $exception) {
+            // The `_extractPostIdsFromExpression()` has an undocumented possible thrown `InvalidArgumentException`
+            // that may be caused intentionally from failure to get the POST IDs or unintentionally from normalization
+            // methods that assume that the input is a POST ID, or a list of IDs.
+            $postIds = [];
+        }
 
         if (count($postIds) > 0) {
             return ['post__in' => $postIds];
