@@ -149,7 +149,8 @@ class AdminEditServiceUiStateHandler implements InvocableInterface
             $b->eq(
                 $b->ef('service', 'id'),
                 $b->lit($serviceId)
-            )
+            ),
+            $b->eq($b->var('post_status'), $b->lit('any'))
         ));
         $service = null;
         foreach ($services as $service) {
