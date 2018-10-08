@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
+
+## [0.1-alpha11] - 2018-10-08
 ### Fixed
 - WP Query arg extraction from expressions always assumed a POST ID query.
 - The state-provision and update handlers can now query and save for non-published downloads.
