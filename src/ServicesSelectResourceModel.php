@@ -121,6 +121,7 @@ class ServicesSelectResourceModel implements SelectCapableInterface
     public function __construct($postType, MapFactoryInterface $mapFactory)
     {
         $this->postType = $this->_normalizeString($postType);
+        $this->mapFactory = $mapFactory;
     }
 
     /**
