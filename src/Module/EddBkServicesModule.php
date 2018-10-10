@@ -96,7 +96,10 @@ class EddBkServicesModule extends AbstractBaseModule
                  * The SELECT RM for services.
                  */
                 'eddbk_services_select_rm' => function (ContainerInterface $c) {
-                    return new ServicesSelectResourceModel($c->get('services/post_type'));
+                    return new ServicesSelectResourceModel(
+                        $c->get('services/post_type'),
+                        $c->get('map_factory')
+                    );
                 },
 
                 /*
