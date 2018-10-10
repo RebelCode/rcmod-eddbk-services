@@ -2,6 +2,7 @@
 
 namespace RebelCode\EddBookings\Services;
 
+use Dhii\Collection\MapFactoryInterface;
 use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
 use Dhii\Exception\CreateOutOfRangeExceptionCapableTrait;
 use Dhii\Expression\LiteralTermInterface;
@@ -101,13 +102,23 @@ class ServicesSelectResourceModel implements SelectCapableInterface
     protected $postType;
 
     /**
+     * Map factory to create maps for results.
+     *
+     * @since [*next-version*]
+     *
+     * @var MapFactoryInterface
+     */
+    protected $mapFactory;
+
+    /**
      * Constructor.
      *
      * @since [*next-version*]
      *
-     * @param string|Stringable $postType The slug of the services post type.
+     * @param string|Stringable        $postType   The slug of the services post type.
+     * @param MapFactoryInterface|null $mapFactory Optional map factory to create maps for results.
      */
-    public function __construct($postType)
+    public function __construct($postType, MapFactoryInterface $mapFactory = null)
     {
         $this->postType = $this->_normalizeString($postType);
     }
@@ -134,7 +145,7 @@ class ServicesSelectResourceModel implements SelectCapableInterface
         foreach ($posts as $_post) {
             $_id = $_post->ID;
 
-            $services[] = [
+            $_service = [
                 'id'               => $_id,
                 'name'             => html_entity_decode($this->_getPostTitle($_post)),
                 'description'      => html_entity_decode($this->_getPostExcerpt($_post)),
@@ -144,6 +155,14 @@ class ServicesSelectResourceModel implements SelectCapableInterface
                 'display_options'  => $this->_getPostMeta($_id, 'eddbk_display_options', []),
                 'timezone'         => $this->_getPostMeta($_id, 'eddbk_timezone', 'UTC'),
             ];
+
+            if ($this->mapFactory !== null) {
+                $_service = $this->mapFactory->make([
+                    MapFactoryInterface::K_DATA => $_service
+                ]);
+            }
+
+            $services[] = $_service;
         }
 
         return $services;
@@ -163,7 +182,7 @@ class ServicesSelectResourceModel implements SelectCapableInterface
             'post_status'    => ['publish'],
             'meta_key'       => 'eddbk_bookings_enabled',
             'meta_value'     => '1',
-            'posts_per_page' => -1
+            'posts_per_page' => -1,
         ];
     }
 
