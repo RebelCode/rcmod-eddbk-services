@@ -1,6 +1,6 @@
 <?php
 
-namespace RebelCode\EddBookings\Services\Module;
+namespace RebelCode\EddBookings\Services;
 
 use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
 use Dhii\Exception\CreateOutOfRangeExceptionCapableTrait;

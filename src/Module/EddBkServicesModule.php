@@ -15,6 +15,8 @@ use GuzzleHttp\Psr7\ServerRequest;
 use IteratorIterator;
 use Psr\Container\ContainerInterface;
 use Psr\EventManager\EventManagerInterface;
+use RebelCode\EddBookings\Services\ServicesSelectResourceModel;
+use RebelCode\EddBookings\Services\ServicesUpdateResourceModel;
 use RebelCode\Modular\Module\AbstractBaseModule;
 use RebelCode\Transformers\CallbackTransformer;
 use RebelCode\Transformers\MapTransformer;
