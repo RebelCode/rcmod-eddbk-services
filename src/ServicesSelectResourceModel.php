@@ -116,9 +116,9 @@ class ServicesSelectResourceModel implements SelectCapableInterface
      * @since [*next-version*]
      *
      * @param string|Stringable        $postType   The slug of the services post type.
-     * @param MapFactoryInterface|null $mapFactory Optional map factory to create maps for results.
+     * @param MapFactoryInterface|null $mapFactory The map factory to create maps for results.
      */
-    public function __construct($postType, MapFactoryInterface $mapFactory = null)
+    public function __construct($postType, MapFactoryInterface $mapFactory)
     {
         $this->postType = $this->_normalizeString($postType);
     }
