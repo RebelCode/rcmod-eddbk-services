@@ -25,6 +25,9 @@ use RebelCode\Storage\Resource\WordPress\Posts\NormalizeWpPostDataArrayCapableTr
 class ServicesInsertResourceModel implements InsertCapableInterface
 {
     /* @since [*next-version*] */
+    use ServicesFieldKeyMapAwareTrait;
+
+    /* @since [*next-version*] */
     use InsertCapableWpTrait;
 
     /* @since [*next-version*] */
@@ -59,13 +62,6 @@ class ServicesInsertResourceModel implements InsertCapableInterface
 
     /* @since [*next-version*] */
     use StringTranslatingTrait;
-
-    /**
-     * The key for the image ID.
-     *
-     * @since [*next-version*]
-     */
-    const K_IMAGE_ID = 'image_id';
 
     /**
      * The post type for services.
@@ -113,9 +109,9 @@ class ServicesInsertResourceModel implements InsertCapableInterface
             $postData = $this->_normalizeWpPostDataArray($_service);
 
             // Get the image ID, if any, and remove from the post data
-            if (array_key_exists(static::K_IMAGE_ID, $postData)) {
-                $imageId = $postData[static::K_IMAGE_ID];
-                unset($postData[static::K_IMAGE_ID]);
+            if (array_key_exists('image_id', $postData)) {
+                $imageId = $postData['image_id'];
+                unset($postData['image_id']);
             } else {
                 $imageId = null;
             }
@@ -196,36 +192,7 @@ class ServicesInsertResourceModel implements InsertCapableInterface
      */
     protected function _getPostFieldKeyMap()
     {
-        return [
-            // Core service fields
-            'id'               => 'ID',
-            'name'             => 'post_title',
-            'description'      => 'post_excerpt',
-            'status'           => 'post_status',
-            static::K_IMAGE_ID => static::K_IMAGE_ID,
-            // Other post fields
-            'guid'             => 'guid',
-            'post_author'      => 'post_author',
-            'type'             => 'post_type',
-            'date'             => 'post_date',
-            'date_gmt'         => 'post_date_gmt',
-            'content'          => 'post_content',
-            'content_filtered' => 'post_content_filtered',
-            'category'         => 'post_category',
-            'password'         => 'post_password',
-            'parent'           => 'post_parent',
-            'modified'         => 'post_modified',
-            'modified_gmt'     => 'post_modified_gmt',
-            'mime_type'        => 'post_mime_type',
-            'tags_input'       => 'tags_input',
-            'tax_input'        => 'tax_input',
-            'meta_input'       => 'meta_input',
-            'pinged'           => 'pinged',
-            'ping_status'      => 'ping_status',
-            'comment_count'    => 'comment_count',
-            'comment_status'   => 'comment_status',
-            'menu_order'       => 'menu_order',
-        ];
+        return $this->_getServicesFieldKeyMap();
     }
 
     /**
