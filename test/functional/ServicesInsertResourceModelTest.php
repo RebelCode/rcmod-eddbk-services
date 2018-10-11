@@ -90,10 +90,10 @@ class ServicesInsertResourceModelTest extends TestCase
             'args'   => [
                 function ($arg) use ($metaPrefix, $postType, $name, $desc, $meta1, $meta2) {
                     $post = array_merge([
-                        'post_title' => null,
-                        'post_desc'  => null,
-                        'post_type'  => null,
-                        'meta_input' => [],
+                        'post_title'   => null,
+                        'post_excerpt' => null,
+                        'post_type'    => null,
+                        'meta_input'   => [],
                     ], $arg);
 
                     return $post['post_title'] === $name &&
@@ -204,10 +204,10 @@ class ServicesInsertResourceModelTest extends TestCase
             'args'   => [
                 function ($arg) use ($metaPrefix, $postType, $name, $desc, $meta) {
                     $post = array_merge([
-                        'post_title' => null,
-                        'post_desc'  => null,
-                        'post_type'  => null,
-                        'meta_input' => [],
+                        'post_title'   => null,
+                        'post_excerpt' => null,
+                        'post_type'    => null,
+                        'meta_input'   => [],
                     ], $arg);
 
                     return $post['post_title'] === $name &&
