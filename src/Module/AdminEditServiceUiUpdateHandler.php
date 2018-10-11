@@ -202,7 +202,7 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
 
         $this->request              = $request;
         $this->response             = $response;
-        $this->servicesSelectRm = $servicesSelectRm;
+        $this->servicesSelectRm     = $servicesSelectRm;
         $this->servicesUpdateRm     = $servicesUpdateRm;
         $this->exprBuilder          = $exprBuilder;
         $this->sessionRulesInsertRm = $sessionRulesInsertRm;
@@ -275,7 +275,7 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
         $serviceIdExpr = $b->eq($b->var('service_id'), $b->lit($serviceId));
 
         // Get the service's timezone
-        $services  = $this->servicesSelectRm->select($b->and(
+        $services = $this->servicesSelectRm->select($b->and(
             $serviceIdExpr,
             $b->eq($b->var('post_status'), $b->lit('any'))
         ));
@@ -336,19 +336,19 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
      */
     protected function _processSessionRuleData($serviceId, $ruleData, $serviceTz)
     {
-        $allDay   = $this->_containerGet($ruleData, 'isAllDay');
+        $allDay = $this->_containerGet($ruleData, 'isAllDay');
 
         // Parse the service timezone name into a timezone object
         $timezoneName = $this->_normalizeString($serviceTz);
         $timezone     = empty($timezoneName) ? null : $this->_createDateTimeZone($timezoneName);
 
         // Get the start ISO 8601 string, parse it and normalize it to the beginning of the day if required
-        $startIso8601    = $this->_containerGet($ruleData, 'start');
-        $startDatetime   = Carbon::parse($startIso8601, $timezone);
+        $startIso8601  = $this->_containerGet($ruleData, 'start');
+        $startDatetime = Carbon::parse($startIso8601, $timezone);
 
         // Get the end ISO 8601 string, parse it and normalize it to the end of the day if required
-        $endIso8601    = $this->_containerGet($ruleData, 'end');
-        $endDateTime   = Carbon::parse($endIso8601, $timezone);
+        $endIso8601  = $this->_containerGet($ruleData, 'end');
+        $endDateTime = Carbon::parse($endIso8601, $timezone);
 
         $data = [
             'id' => $this->_containerHas($ruleData, 'id')
@@ -400,15 +400,14 @@ class AdminEditServiceUiUpdateHandler implements InvocableInterface
      * Creates a {@link DateTimeZone} object for a timezone, by name.
      *
      * @see DateTimeZone
-     *
      * @since [*next-version*]
      *
      * @param string|Stringable $tzName The name of the timezone.
      *
-     * @return DateTimeZone The created {@link DateTimeZone} instance.
-     *
      * @throws InvalidArgumentException If the timezone name is not a string or stringable object.
-     * @throws OutOfRangeException If the timezone name is invalid and does not represent a valid timezone.
+     * @throws OutOfRangeException      If the timezone name is invalid and does not represent a valid timezone.
+     *
+     * @return DateTimeZone The created {@link DateTimeZone} instance.
      */
     protected function _createDateTimeZone($tzName)
     {

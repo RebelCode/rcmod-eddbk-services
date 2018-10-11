@@ -120,7 +120,7 @@ class ServicesSelectResourceModel implements SelectCapableInterface
      */
     public function __construct($postType, MapFactoryInterface $mapFactory)
     {
-        $this->postType = $this->_normalizeString($postType);
+        $this->postType   = $this->_normalizeString($postType);
         $this->mapFactory = $mapFactory;
     }
 
@@ -159,7 +159,7 @@ class ServicesSelectResourceModel implements SelectCapableInterface
 
             if ($this->mapFactory !== null) {
                 $_service = $this->mapFactory->make([
-                    MapFactoryInterface::K_DATA => $_service
+                    MapFactoryInterface::K_DATA => $_service,
                 ]);
             }
 
