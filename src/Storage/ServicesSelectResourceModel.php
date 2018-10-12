@@ -11,6 +11,7 @@ use Dhii\Expression\VariableTermInterface;
 use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Storage\Resource\Sql\EntityFieldInterface;
+use Dhii\Storage\Resource\Sql\OrderInterface;
 use Dhii\Util\Normalization\NormalizeArrayCapableTrait;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
@@ -29,6 +30,7 @@ use RebelCode\WordPress\Query\Builder\GetWpQueryRelationOperatorCapableTrait;
 use RebelCode\WordPress\Query\Builder\GetWpQueryTaxCompareOperatorCapableTrait;
 use stdClass;
 use Traversable;
+use WP_Post;
 
 /**
  * A resource model for querying services as `download` posts from EDD.
@@ -37,6 +39,9 @@ use Traversable;
  */
 class ServicesSelectResourceModel implements SelectCapableInterface
 {
+    /* @since [*next-version*] */
+    use ServicesFieldKeyMapAwareTrait;
+
     /* @since [*next-version*] */
     use ExtractPostIdsFromExpressionCapableTrait;
 
@@ -139,8 +144,12 @@ class ServicesSelectResourceModel implements SelectCapableInterface
             ? $this->_buildWpQueryArgs($condition)
             : [];
 
-        $fullArgs = array_merge($this->_getDefaultWpQueryArgs(), $queryArgs);
+        $queryArgs = array_merge($this->_getDefaultWpQueryArgs(), $queryArgs);
+        $fullArgs  = $this->_buildLimitAndOffset($queryArgs, $limit, $offset);
+        $fullArgs  = $this->_buildOrdering($fullArgs, $ordering);
+
         $posts    = $this->_queryPosts($fullArgs);
+        $posts    = (is_array($posts)) ? $posts : []; // Because WordPress may occasionally return an undocumented null
         $services = [];
 
         foreach ($posts as $_post) {
@@ -185,6 +194,66 @@ class ServicesSelectResourceModel implements SelectCapableInterface
             'meta_value'     => '1',
             'posts_per_page' => -1,
         ];
+    }
+
+    /**
+     * Builds the ordering into the WordPress query args.
+     *
+     * @since [*next-version*]
+     *
+     * @param array                                 $queryArgs The query args.
+     * @param OrderInterface[]|stdClass|Traversable $ordering  The order instances.
+     *
+     * @return array The query args with the integrated ordering.
+     */
+    protected function _buildOrdering($queryArgs, $ordering)
+    {
+        $orderBy     = [];
+        $orderMode   = null;
+        $fieldKeyMap = $this->_getServicesFieldKeyMap();
+
+        foreach ($ordering as $order) {
+            /* @var $order OrderInterface */
+            if ($orderMode === null) {
+                $orderMode = $order->isAscending() ? 'ASC' : 'DESC';
+            }
+
+            $serviceField = $order->getField();
+            $postField    = isset($fieldKeyMap[$serviceField])
+                ? $fieldKeyMap[$serviceField]
+                : $serviceField;
+
+            $orderBy[] = $postField;
+        }
+
+        $queryArgs['orderby'] = $orderBy;
+        $queryArgs['order']   = $orderMode;
+
+        return $queryArgs;
+    }
+
+    /**
+     * Builds the limit and offset into the WordPress query args.
+     *
+     * @since [*next-version*]
+     *
+     * @param array    $queryArgs The query args.
+     * @param int|null $limit     The limit or null for no limit.
+     * @param int|null $offset    The offset or null for no offset.
+     *
+     * @return array The query args with the integrated limit and offset.
+     */
+    protected function _buildLimitAndOffset($queryArgs, $limit, $offset)
+    {
+        if ($limit !== null) {
+            $queryArgs['posts_per_page'] = (int) $limit;
+        }
+
+        if ($offset !== null) {
+            $queryArgs['offset'] = (int) $offset;
+        }
+
+        return $queryArgs;
     }
 
     /**
@@ -358,7 +427,7 @@ class ServicesSelectResourceModel implements SelectCapableInterface
      *
      * @since [*next-version*]
      *
-     * @param \WP_Post $post The WordPress Post.
+     * @param WP_Post $post The WordPress Post.
      *
      * @return string The post title.
      */
@@ -372,7 +441,7 @@ class ServicesSelectResourceModel implements SelectCapableInterface
      *
      * @since [*next-version*]
      *
-     * @param \WP_Post $post The WordPress Post.
+     * @param WP_Post $post The WordPress Post.
      *
      * @return string The post excerpt.
      */
@@ -422,7 +491,7 @@ class ServicesSelectResourceModel implements SelectCapableInterface
      *
      * @param array $args The arguments.
      *
-     * @return \WP_Post[]|stdClass|Traversable
+     * @return WP_Post[]|stdClass|Traversable
      */
     protected function _queryPosts($args)
     {
