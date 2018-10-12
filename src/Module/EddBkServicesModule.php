@@ -16,6 +16,7 @@ use IteratorIterator;
 use Psr\Container\ContainerInterface;
 use Psr\EventManager\EventManagerInterface;
 use RebelCode\EddBookings\Services\Storage\ServicesDeleteResourceModel;
+use RebelCode\EddBookings\Services\Storage\ServicesEntityManager;
 use RebelCode\EddBookings\Services\Storage\ServicesInsertResourceModel;
 use RebelCode\EddBookings\Services\Storage\ServicesSelectResourceModel;
 use RebelCode\EddBookings\Services\Storage\ServicesUpdateResourceModel;
@@ -134,6 +135,22 @@ class EddBkServicesModule extends AbstractBaseModule
                  */
                 'eddbk_services_delete_rm' => function (ContainerInterface $c) {
                     return new ServicesDeleteResourceModel($c->get('eddbk_services_select_rm'));
+                },
+
+                /**
+                 * The services entity manager.
+                 *
+                 * @since [*next-version*]
+                 */
+                'eddbk_services_entity_manager' => function (ContainerInterface $c) {
+                    return new ServicesEntityManager(
+                        $c->get('eddbk_services_select_rm'),
+                        $c->get('eddbk_services_insert_rm'),
+                        $c->get('eddbk_services_update_rm'),
+                        $c->get('eddbk_services_delete_rm'),
+                        $c->get('sql_order_factory'),
+                        $c->get('sql_expression_builder')
+                    );
                 },
 
                 /*
