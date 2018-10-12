@@ -38,6 +38,13 @@
             "RebelCode\\EddBookings\\Services\\": "src"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "RebelCode\\EddBookings\\Services\\UnitTest\\": "test/unit",
+            "RebelCode\\EddBookings\\Services\\FuncTest\\": "test/functional",
+            "RebelCode\\EddBookings\\Services\\TestStub\\": "test/stub"
+        }
+    },
     "scripts": {
         "test": "phpunit",
         "csfix": "php-cs-fixer fix -vvv"
