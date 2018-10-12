@@ -201,13 +201,17 @@ class ServicesSelectResourceModel implements SelectCapableInterface
      *
      * @since [*next-version*]
      *
-     * @param array                                 $queryArgs The query args.
-     * @param OrderInterface[]|stdClass|Traversable $ordering  The order instances.
+     * @param array                                      $queryArgs The query args.
+     * @param OrderInterface[]|stdClass|Traversable|null $ordering  The order instances.
      *
      * @return array The query args with the integrated ordering.
      */
     protected function _buildOrdering($queryArgs, $ordering)
     {
+        if ($ordering === null) {
+            return $queryArgs;
+        }
+
         $orderBy     = [];
         $orderMode   = null;
         $fieldKeyMap = $this->_getServicesFieldKeyMap();
