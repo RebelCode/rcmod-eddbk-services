@@ -94,6 +94,8 @@ class EddBkServicesModule extends AbstractBaseModule
 
                 /*
                  * The SELECT RM for services.
+                 *
+                 * @since [*next-version*]
                  */
                 'eddbk_services_select_rm' => function (ContainerInterface $c) {
                     return new ServicesSelectResourceModel(
@@ -104,6 +106,8 @@ class EddBkServicesModule extends AbstractBaseModule
 
                 /*
                  * The UPDATE RM for services.
+                 *
+                 * @since [*next-version*]
                  */
                 'eddbk_services_update_rm' => function (ContainerInterface $c) {
                     return new ServicesUpdateResourceModel();
