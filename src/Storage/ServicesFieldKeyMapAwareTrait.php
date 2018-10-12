@@ -27,7 +27,7 @@ trait ServicesFieldKeyMapAwareTrait
             'image_id'         => 'image_id',
             // Other post fields
             'guid'             => 'guid',
-            'post_author'      => 'post_author',
+            'author'           => 'post_author',
             'type'             => 'post_type',
             'date'             => 'post_date',
             'date_gmt'         => 'post_date_gmt',
