@@ -1,10 +1,10 @@
 <?php
 
-namespace RebelCode\EddBookings\Services\FuncTest;
+namespace RebelCode\EddBookings\Services\FuncTest\Storage;
 
 use Dhii\Storage\Resource\SelectCapableInterface;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
-use RebelCode\EddBookings\Services\ServicesDeleteResourceModel as TestSubject;
+use RebelCode\EddBookings\Services\Storage\ServicesDeleteResourceModel as TestSubject;
 use WP_Mock;
 use Xpmock\TestCase;
 
@@ -59,7 +59,7 @@ class ServicesDeleteResourceModelTest extends TestCase
         $subject = new TestSubject($this->createSelectRm());
 
         $this->assertInstanceOf(
-            'RebelCode\EddBookings\Services\ServicesDeleteResourceModel',
+            'RebelCode\EddBookings\Services\Storage\ServicesDeleteResourceModel',
             $subject,
             'Created instance of the test subject is invalid.'
         );

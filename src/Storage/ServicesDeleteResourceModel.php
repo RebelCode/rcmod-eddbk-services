@@ -1,6 +1,6 @@
 <?php
 
-namespace RebelCode\EddBookings\Services;
+namespace RebelCode\EddBookings\Services\Storage;
 
 use Dhii\Data\Container\ContainerGetCapableTrait;
 use Dhii\Data\Container\CreateContainerExceptionCapableTrait;

@@ -1,11 +1,9 @@
 <?php
 
-namespace RebelCode\EddBookings\Services\FuncTest;
+namespace RebelCode\EddBookings\Services\FuncTest\Storage;
 
-use \InvalidArgumentException;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use Xpmock\TestCase;
-use RebelCode\EddBookings\Services\ServicesFieldKeyMapAwareTrait as TestSubject;
 
 /**
  * Tests {@see TestSubject}.
@@ -19,7 +17,7 @@ class ServicesFieldKeyMapAwareTraitTest extends TestCase
      *
      * @since [*next-version*]
      */
-    const TEST_SUBJECT_CLASSNAME = 'RebelCode\EddBookings\Services\ServicesFieldKeyMapAwareTrait';
+    const TEST_SUBJECT_CLASSNAME = 'RebelCode\EddBookings\Services\Storage\ServicesFieldKeyMapAwareTrait';
 
     /**
      * Creates a new instance of the test subject.

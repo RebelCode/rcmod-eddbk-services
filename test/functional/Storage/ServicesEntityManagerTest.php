@@ -1,6 +1,6 @@
 <?php
 
-namespace RebelCode\EddBookings\Services\FuncTest;
+namespace RebelCode\EddBookings\Services\FuncTest\Storage;
 
 use Dhii\Expression\LogicalExpressionInterface;
 use Dhii\Factory\FactoryInterface;
@@ -10,8 +10,8 @@ use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Storage\Resource\Sql\OrderInterface;
 use Dhii\Storage\Resource\UpdateCapableInterface;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
-use RebelCode\EddBookings\Services\ServicesEntityManager as TestSubject;
-use RebelCode\EddBookings\Services\ServicesInsertResourceModel;
+use RebelCode\EddBookings\Services\Storage\ServicesEntityManager as TestSubject;
+use RebelCode\EddBookings\Services\Storage\ServicesInsertResourceModel;
 use SebastianBergmann\Comparator\ArrayComparator;
 use SebastianBergmann\Comparator\ComparisonFailure;
 use SebastianBergmann\Comparator\Factory as ComparatorFactory;
@@ -170,7 +170,7 @@ class ServicesEntityManagerTest extends TestCase
         );
 
         $this->assertInstanceOf(
-            'RebelCode\EddBookings\Services\ServicesEntityManager',
+            'RebelCode\EddBookings\Services\Storage\ServicesEntityManager',
             $subject,
             'Failed to create an instance of the test subject.'
         );

@@ -1,6 +1,6 @@
 <?php
 
-namespace RebelCode\EddBookings\Services;
+namespace RebelCode\EddBookings\Services\Storage;
 
 use Dhii\Collection\MapFactoryInterface;
 use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;

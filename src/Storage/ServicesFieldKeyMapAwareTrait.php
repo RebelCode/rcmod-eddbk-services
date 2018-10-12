@@ -1,6 +1,6 @@
 <?php
 
-namespace RebelCode\EddBookings\Services;
+namespace RebelCode\EddBookings\Services\Storage;
 
 /**
  * Provides awareness of the services field-key map.

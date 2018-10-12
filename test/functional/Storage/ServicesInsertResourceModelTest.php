@@ -1,8 +1,8 @@
 <?php
 
-namespace RebelCode\EddBookings\Services\FuncTest;
+namespace RebelCode\EddBookings\Services\FuncTest\Storage;
 
-use RebelCode\EddBookings\Services\ServicesInsertResourceModel as TestSubject;
+use RebelCode\EddBookings\Services\Storage\ServicesInsertResourceModel as TestSubject;
 use WP_Mock;
 use Xpmock\TestCase;
 
@@ -43,7 +43,7 @@ class ServicesInsertResourceModelTest extends TestCase
         $subject = new TestSubject('', '');
 
         $this->assertInstanceOf(
-            'RebelCode\EddBookings\Services\ServicesInsertResourceModel',
+            'RebelCode\EddBookings\Services\Storage\ServicesInsertResourceModel',
             $subject,
             'Created instance of the test subject is invalid.'
         );
