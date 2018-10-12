@@ -15,6 +15,8 @@ use GuzzleHttp\Psr7\ServerRequest;
 use IteratorIterator;
 use Psr\Container\ContainerInterface;
 use Psr\EventManager\EventManagerInterface;
+use RebelCode\EddBookings\Services\Storage\ServicesDeleteResourceModel;
+use RebelCode\EddBookings\Services\Storage\ServicesInsertResourceModel;
 use RebelCode\EddBookings\Services\Storage\ServicesSelectResourceModel;
 use RebelCode\EddBookings\Services\Storage\ServicesUpdateResourceModel;
 use RebelCode\Modular\Module\AbstractBaseModule;
@@ -105,12 +107,33 @@ class EddBkServicesModule extends AbstractBaseModule
                 },
 
                 /*
+                 * The INSERT RM for services.
+                 *
+                 * @since [*next-version*]
+                 */
+                'eddbk_services_insert_rm' => function (ContainerInterface $c) {
+                    return new ServicesInsertResourceModel(
+                        $c->get('services/post_type'),
+                        $c->get('services/meta_prefix')
+                    );
+                },
+
+                /*
                  * The UPDATE RM for services.
                  *
                  * @since [*next-version*]
                  */
                 'eddbk_services_update_rm' => function (ContainerInterface $c) {
                     return new ServicesUpdateResourceModel();
+                },
+
+                /*
+                 * The DELETE RM for services.
+                 *
+                 * @since [*next-version*]
+                 */
+                'eddbk_services_delete_rm' => function (ContainerInterface $c) {
+                    return new ServicesDeleteResourceModel($c->get('eddbk_services_select_rm'));
                 },
 
                 /*
