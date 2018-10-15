@@ -3,20 +3,20 @@
 namespace RebelCode\EddBookings\Services\Storage;
 
 /**
- * Provides awareness of the services field-key map.
+ * Provides awareness of the services post key map.
  *
  * @since [*next-version*]
  */
-trait ServicesFieldKeyMapAwareTrait
+trait ServicesPostKeyMapAwareTrait
 {
     /**
-     * Retrieves the field-key map for services.
+     * Retrieves the map of services keys to their WP Post key counterparts.
      *
      * @since [*next-version*]
      *
      * @return array
      */
-    protected function _getServicesFieldKeyMap()
+    protected function _getServicesPostKeyMap()
     {
         return [
             // Core service fields
@@ -24,7 +24,6 @@ trait ServicesFieldKeyMapAwareTrait
             'name'             => 'post_title',
             'description'      => 'post_excerpt',
             'status'           => 'post_status',
-            'image_id'         => 'image_id',
             // Other post fields
             'guid'             => 'guid',
             'author'           => 'post_author',
@@ -39,9 +38,8 @@ trait ServicesFieldKeyMapAwareTrait
             'modified'         => 'post_modified',
             'modified_gmt'     => 'post_modified_gmt',
             'mime_type'        => 'post_mime_type',
-            'tags_input'       => 'tags_input',
-            'tax_input'        => 'tax_input',
-            'meta_input'       => 'meta_input',
+            'tags'             => 'tags_input',
+            'taxonomies'       => 'tax_input',
             'pinged'           => 'pinged',
             'ping_status'      => 'ping_status',
             'comment_count'    => 'comment_count',
