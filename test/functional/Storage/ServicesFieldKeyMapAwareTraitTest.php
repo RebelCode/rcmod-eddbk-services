@@ -10,14 +10,14 @@ use Xpmock\TestCase;
  *
  * @since [*next-version*]
  */
-class ServicesFieldKeyMapAwareTraitTest extends TestCase
+class ServicesPostKeyMapAwareTraitTest extends TestCase
 {
     /**
      * The class name of the test subject.
      *
      * @since [*next-version*]
      */
-    const TEST_SUBJECT_CLASSNAME = 'RebelCode\EddBookings\Services\Storage\ServicesFieldKeyMapAwareTrait';
+    const TEST_SUBJECT_CLASSNAME = 'RebelCode\EddBookings\Services\Storage\ServicesPostKeyMapAwareTrait';
 
     /**
      * Creates a new instance of the test subject.
