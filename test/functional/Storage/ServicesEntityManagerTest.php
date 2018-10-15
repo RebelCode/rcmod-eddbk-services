@@ -1,6 +1,6 @@
 <?php
 
-namespace RebelCode\EddBookings\Services\FuncTest\Storage;
+namespace RebelCode\EddBookings\Services\UnitTest\Storage;
 
 use Dhii\Expression\LogicalExpressionInterface;
 use Dhii\Factory\FactoryInterface;
@@ -161,11 +161,12 @@ class ServicesEntityManagerTest extends TestCase
     public function testCanBeCreated()
     {
         $subject = new TestSubject(
+            '',
+            '',
             $this->createSelectRm(),
             $this->createInsertRm(),
             $this->createUpdateRm(),
             $this->createDeleteRm(),
-            $this->createOrderFactory(),
             $this->createExprBuilder()
         );
 
@@ -189,48 +190,87 @@ class ServicesEntityManagerTest extends TestCase
      */
     public function testAdd()
     {
-        $postType    = uniqid('post-type-');
-        $metaPrefix  = uniqid('prefix-');
-        $name        = uniqid('name-');
-        $description = uniqid('description-');
-        $imageId     = rand(1, 100);
-        $meta1       = uniqid('meta-');
-        $meta2       = uniqid('meta-');
+        $postType     = uniqid('post-type-');
+        $metaPrefix   = uniqid('prefix-');
+        $name         = uniqid('name-');
+        $description  = uniqid('description-');
+        $imageId      = rand(1, 100);
+        $meta1        = uniqid('meta-');
+        $meta2        = uniqid('meta-');
+        $rule1Id      = rand(1, 100);
+        $rule2Id      = rand(1, 100);
+        $availability = [
+            $rule1 = [
+                'isAllDay'          => false,
+                'start'             => '2018-10-10T10:00:00+02:00',
+                'end'               => '2018-10-10T18:00:00+02:00',
+                'repeat'            => false,
+                'repeatUnit'        => 'day',
+                'repeatPeriod'      => 1,
+                'repeatUntil'       => 'period',
+                'repeatUntilPeriod' => 5,
+                'repeatUntilDate'   => 0,
+                'repeatWeeklyOn'    => [],
+                'repeatMonthlyOn'   => [],
+                'excludeDates'      => [
+                    '2018-10-12T00:00:00+02:00',
+                ],
+            ],
+            $rule2 = [
+                'id'                => $rule2Id,
+                'isAllDay'          => false,
+                'start'             => '2018-10-10T10:00:00+02:00',
+                'end'               => '2018-10-10T18:00:00+02:00',
+                'repeat'            => false,
+                'repeatUnit'        => 'day',
+                'repeatPeriod'      => 1,
+                'repeatUntil'       => 'period',
+                'repeatUntilPeriod' => 5,
+                'repeatUntilDate'   => 0,
+                'repeatWeeklyOn'    => [],
+                'repeatMonthlyOn'   => [],
+                'excludeDates'      => [
+                    '2018-10-12T00:00:00+02:00',
+                ],
+            ],
+        ];
 
         $subject = new TestSubject(
+            $postType,
+            $metaPrefix,
             $this->createSelectRm(),
-            new ServicesInsertResourceModel($postType, $metaPrefix),
-            $this->createUpdateRm(),
+            $insertRm = $this->createInsertRm(),
+            $updateRm = $this->createUpdateRm(),
             $this->createDeleteRm(),
-            $this->createOrderFactory(),
             $this->createExprBuilder()
         );
 
-        $expectedId       = rand(1, 100);
-        $expectedPostData = [
+        $entity = [
+            'name'         => $name,
+            'description'  => $description,
+            'image_id'     => $imageId,
+            'meta1'        => $meta1,
+            'meta2'        => $meta2,
+            'availability' => $availability,
+        ];
+
+        $id = rand(1, 100);
+
+        $expectedPostInsertion = [
+            'post_type'    => $postType,
             'post_title'   => $name,
             'post_excerpt' => $description,
-            'post_type'    => $postType,
             'meta_input'   => [
                 $metaPrefix . 'meta1' => $meta1,
                 $metaPrefix . 'meta2' => $meta2,
             ],
         ];
-
         WP_Mock::wpFunction('wp_insert_post', [
             'times'  => 1,
-            'return' => $expectedId,
+            'return' => $id,
             'args'   => [
-                function ($arg) use ($expectedPostData) {
-                    $comparator = new ArrayComparator();
-                    $comparator->setFactory(ComparatorFactory::getInstance());
-
-                    try {
-                        $comparator->assertEquals($expectedPostData, $arg, 0);
-                    } catch (ComparisonFailure $failure) {
-                        echo $failure->getDiff();
-                        throw $failure;
-                    }
+                function ($actual) use ($expectedPostInsertion) {
+                    $this->assertEquals($expectedPostInsertion, $actual);
 
                     return true;
                 },
@@ -238,20 +278,21 @@ class ServicesEntityManagerTest extends TestCase
         ]);
 
         WP_Mock::wpFunction('set_post_thumbnail', [
-            'times'  => 1,
-            'return' => rand(1, 100),
-            'args'   => [$expectedId, $imageId],
+            'times' => 1,
+            'args'  => [
+                $id,
+                $imageId,
+            ],
         ]);
 
-        $returnedId = $subject->add([
-            'name'        => $name,
-            'description' => $description,
-            'image_id'    => $imageId,
-            'meta1'       => $meta1,
-            'meta2'       => $meta2,
-        ]);
+        $insertRm->expects($this->once())
+                 ->method('insert')
+                 ->willReturn([$rule1Id]);
 
-        $this->assertEquals($expectedId, $returnedId);
+        $updateRm->expects($this->once())
+                 ->method('update');
+
+        $subject->add($entity);
     }
 
     /**
@@ -261,17 +302,22 @@ class ServicesEntityManagerTest extends TestCase
      */
     public function testQuery()
     {
+        $postType   = uniqid('post-type-');
+        $metaPrefix = uniqid('prefix-');
+
         $subject = new TestSubject(
-            $rm = $this->createSelectRm(),
+            $postType,
+            $metaPrefix,
+            $selectRm = $this->createSelectRm(),
             $this->createInsertRm(),
             $this->createUpdateRm(),
             $this->createDeleteRm(),
-            $this->createOrderFactory(),
             $this->createExprBuilder()
         );
 
         // Prepare query vars
         $name      = uniqid('name-');
+        $desc      = uniqid('desc-');
         $metaKey   = uniqid('meta-key-');
         $metaValue = uniqid('meta-value-');
         $orderBy   = uniqid('field-');
@@ -280,70 +326,91 @@ class ServicesEntityManagerTest extends TestCase
         $offset    = rand(0, 100);
         // Prepare query
         $query = [
-            'name'   => $name,
-            $metaKey => $metaValue,
+            'name'        => $name,
+            'description' => $desc,
+            $metaKey      => $metaValue,
+        ];
+
+        // Prepare expected WordPress query args
+        $expectedQueryArgs = [
+            'post_title'     => $name,
+            'post_excerpt'   => $desc,
+            'post_type'      => $postType,
+            'post_status'    => 'publish',
+            'meta_query'     => [
+                'relation' => 'AND',
+                [
+                    'key'   => $metaPrefix . $metaKey,
+                    'value' => $metaValue,
+                ],
+            ],
+            'posts_per_page' => $limit,
+            'orderby'        => $orderBy,
+            'order'          => $orderDesc ? 'DESC' : 'ASC',
+            'offset'         => $offset,
         ];
 
         // Prepare expected mock results
-        $expectedServices = [
-            [
-                'id'     => rand(1, 100),
-                'name'   => $name,
-                $metaKey => $metaKey,
+        $expectedRules1 = [new stdClass(), new stdClass()];
+        $expectedRules2 = [new stdClass(), new stdClass()];
+
+        $expectedPosts = [
+            (object) [
+                'ID'           => $id1 = rand(1, 100),
+                'post_title'   => $name,
+                'post_excerpt' => $desc,
             ],
-            [
-                'id'     => rand(1, 100),
-                'name'   => $name,
-                $metaKey => $metaKey,
+            (object) [
+                'ID'           => $id2 = rand(1, 100),
+                'post_title'   => $name,
+                'post_excerpt' => $desc,
             ],
         ];
 
-        // Function to match the condition passed to SELECT RM
-        $matchCondition = function ($condition) {
-            /* @var $condition LogicalExpressionInterface */
+        $expectedServices = [
+            [
+                'id'            => $id1,
+                'name'          => $name,
+                'desc'          => $desc,
+                $metaKey        => $metaKey,
+                'session_rules' => $expectedRules1,
+            ],
+            [
+                'id'            => $id2,
+                'name'          => $name,
+                'desc'          => $desc,
+                $metaKey        => $metaKey,
+                'session_rules' => $expectedRules2,
+            ],
+        ];
 
-            // Condition must be an AND expression
-            if ($condition->getType() !== 'and') {
-                return false;
-            };
+        WP_Mock::wpFunction('get_posts', [
+            'times'  => 1,
+            'args'   => [
+                function ($queryArgs) use ($expectedQueryArgs) {
+                    $this->assertEquals($expectedQueryArgs, $queryArgs);
 
-            // Condition must have two terms
-            if (count($condition->getTerms()) !== 2) {
-                return false;
-            }
+                    return true;
+                },
+            ],
+            'return' => $expectedPosts,
+        ]);
 
-            // All terms are "eq" type expressions with two terms
-            foreach ($condition->getTerms() as $term) {
-                if ($term instanceof LogicalExpressionInterface &&
-                    $term->getType() === 'eq' &&
-                    count($term->getTerms()) === 2
-                ) {
-                    continue;
+        WP_Mock::wpFunction('get_the_post_thumbnail_url');
+        WP_Mock::wpFunction('get_post_meta', [
+            'return' => function ($post, $key) use ($metaKey, $metaValue) {
+                if ($key === $metaKey) {
+                    return $metaValue;
                 }
 
-                return false;
-            }
+                return '';
+            },
+        ]);
 
-            return true;
-        };
-
-        // Function to match the ordering
-        $matchOrder = function ($ordering) use ($orderBy, $orderDesc) {
-            if (count($ordering) === 0) {
-                return false;
-            }
-
-            /* @var $order OrderInterface */
-            $order = $ordering[0];
-
-            return $order->getField() === $orderBy && $order->isAscending() !== $orderDesc;
-        };
-
-        // Expect SELECT resource model to be invoked
-        $rm->expects($this->once())
-           ->method('select')
-           ->with($this->callback($matchCondition), $this->callback($matchOrder), $limit, $offset)
-           ->willReturn($expectedServices);
+        // Expect rules SELECT resource model to be invoked
+        $selectRm->expects($this->exactly(2))
+                 ->method('select')
+                 ->willReturnOnConsecutiveCalls($expectedRules1, $expectedRules2);
 
         // Query and get services
         $returnedServices = $subject->query($query, $limit, $offset, $orderBy, $orderDesc);
@@ -357,7 +424,7 @@ class ServicesEntityManagerTest extends TestCase
      *
      * @since [*next-version*]
      */
-    public function testGet()
+    public function estGet()
     {
         $subject = new TestSubject(
             $rm = $this->createSelectRm(),
@@ -420,7 +487,7 @@ class ServicesEntityManagerTest extends TestCase
      *
      * @since [*next-version*]
      */
-    public function testHasTrue()
+    public function estHasTrue()
     {
         $subject = new TestSubject(
             $rm = $this->createSelectRm(),
@@ -454,7 +521,7 @@ class ServicesEntityManagerTest extends TestCase
      *
      * @since [*next-version*]
      */
-    public function testHasFalse()
+    public function estHasFalse()
     {
         $subject = new TestSubject(
             $rm = $this->createSelectRm(),
@@ -481,7 +548,7 @@ class ServicesEntityManagerTest extends TestCase
      *
      * @since [*next-version*]
      */
-    public function testUpdate()
+    public function estUpdate()
     {
         $subject = new TestSubject(
             $this->createSelectRm(),
@@ -540,7 +607,7 @@ class ServicesEntityManagerTest extends TestCase
      *
      * @since [*next-version*]
      */
-    public function testSet()
+    public function estSet()
     {
         $subject = new TestSubject(
             $this->createSelectRm(),
@@ -600,7 +667,7 @@ class ServicesEntityManagerTest extends TestCase
      *
      * @since [*next-version*]
      */
-    public function testDelete()
+    public function estDelete()
     {
         $subject = new TestSubject(
             $this->createSelectRm(),
