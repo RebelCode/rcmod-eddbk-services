@@ -5,9 +5,9 @@ namespace RebelCode\EddBookings\Services\Module;
 use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
 use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Invocation\InvocableInterface;
-use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Transformer\TransformerInterface;
 use Psr\EventManager\EventInterface;
+use RebelCode\Entity\EntityManagerInterface;
 
 /**
  * The event handler that provides the services for the admin bookings UI.
@@ -23,13 +23,13 @@ class AdminBookingsUiServicesHandler implements InvocableInterface
     use StringTranslatingTrait;
 
     /**
-     * The SELECT resource model for services.
+     * The services entity manager.
      *
      * @since [*next-version*]
      *
-     * @var SelectCapableInterface
+     * @var EntityManagerInterface
      */
-    protected $servicesSelectRm;
+    protected $servicesEm;
 
     /**
      * The transformer for transforming lists of services.
@@ -45,12 +45,12 @@ class AdminBookingsUiServicesHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
-     * @param SelectCapableInterface $servicesSelectRm    The SELECT resource model for services.
+     * @param EntityManagerInterface $servicesEm          The services entity manager.
      * @param TransformerInterface   $servicesTransformer The transformer for transforming lists of services.
      */
-    public function __construct($servicesSelectRm, $servicesTransformer)
+    public function __construct($servicesEm, $servicesTransformer)
     {
-        $this->servicesSelectRm    = $servicesSelectRm;
+        $this->servicesEm          = $servicesEm;
         $this->servicesTransformer = $servicesTransformer;
     }
 
@@ -69,7 +69,9 @@ class AdminBookingsUiServicesHandler implements InvocableInterface
             );
         }
 
-        $services    = $this->servicesTransformer->transform($this->servicesSelectRm->select());
+        $services    = $this->servicesEm->query(['status' => 'any']);
+        $services    = $this->servicesTransformer->transform($services);
+
         $eventParams = [
             'services' => $services,
         ];
