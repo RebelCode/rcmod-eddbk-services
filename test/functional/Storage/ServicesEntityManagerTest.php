@@ -412,6 +412,95 @@ class ServicesEntityManagerTest extends TestCase
     }
 
     /**
+     * Tests the querying functionality without any arguments.
+     *
+     * @since [*next-version*]
+     */
+    public function testQueryNoArgs()
+    {
+        $subject = new TestSubject(
+            'download',
+            'eddbk_',
+            $selectRm = $this->createSelectRm(),
+            $this->createInsertRm(),
+            $this->createUpdateRm(),
+            $this->createDeleteRm(),
+            $this->createExprBuilder()
+        );
+
+        WP_Mock::wpFunction('get_posts', [
+            'times'  => 1,
+            'args'   => [
+                function ($arg) {
+                    $expected = [
+                        'post_type'      => 'download',
+                        'post_status'    => 'publish',
+                        'posts_per_page' => -1,
+                        'meta_query'     => [
+                            'relation'         => 'AND',
+                            'bookings_enabled' => [
+                                'key'   => 'eddbk_bookings_enabled',
+                                'value' => '1',
+                            ],
+                        ],
+                    ];
+
+                    $this->assertEquals($arg, $expected);
+
+                    return true;
+                },
+            ],
+            'return' => [
+                (object) [
+                    'ID'           => 112,
+                    'post_title'   => 'Test Service',
+                    'post_excerpt' => 'A test service',
+                ],
+            ],
+        ]);
+
+        WP_Mock::wpFunction('get_the_post_thumbnail_url', [
+            'times'  => 1,
+            'args'   => [
+                112,
+            ],
+            'return' => 68,
+        ]);
+
+        WP_Mock::wpFunction('get_post_meta', [
+            'times'  => '4-', // 4 or more times (four meta keys are known at the time of writing this test)
+            'args'   => [112, Functions::type('string'), true],
+            'return' => 'test_meta',
+        ]);
+
+        $selectRm->expects($this->once())
+                 ->method('select')
+                 ->willReturn($rules = [
+                     [
+                         'start' => '2018-10-10T10:00:00+02:00',
+                         'end'   => '2018-10-10T15:00:00+02:00',
+                     ],
+                 ]);
+
+        $actual   = $subject->query();
+        $expected = [
+            [
+                'id'               => 112,
+                'name'             => 'Test Service',
+                'description'      => 'A test service',
+                'bookings_enabled' => 'test_meta',
+                'timezone'         => 'test_meta',
+                'display_options'  => 'test_meta',
+                'session_lengths'  => 'test_meta',
+                'image_url'        => 68,
+                'availability'     => $rules,
+            ],
+        ];
+
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
      * Tests the retrieval of entities by ID.
      *
      * @since [*next-version*]

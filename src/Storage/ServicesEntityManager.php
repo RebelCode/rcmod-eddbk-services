@@ -337,9 +337,10 @@ class ServicesEntityManager implements EntityManagerInterface
             unset($args['ID']);
         }
         // Add limit if provided
-        if ($limit !== null) {
-            $args['posts_per_page'] = $this->_normalizeInt($limit);
-        }
+        $args['posts_per_page'] = ($limit !== null)
+            ? $this->_normalizeInt($limit)
+            : -1;
+
         // Add offset if provided
         if ($offset !== null) {
             $args['offset'] = $this->_normalizeInt($offset);
