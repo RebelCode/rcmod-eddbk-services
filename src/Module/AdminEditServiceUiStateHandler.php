@@ -11,11 +11,12 @@ use Dhii\Exception\CreateOutOfRangeExceptionCapableTrait;
 use Dhii\Exception\CreateRuntimeExceptionCapableTrait;
 use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Invocation\InvocableInterface;
-use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Transformer\TransformerInterface;
 use Dhii\Util\Normalization\NormalizeArrayCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\EventManager\EventInterface;
+use RebelCode\Entity\EntityManagerInterface;
 
 /**
  * Handler for providing the state to the admin edit service page UI.
@@ -62,22 +63,13 @@ class AdminEditServiceUiStateHandler implements InvocableInterface
     const K_EVENT_SERVICE_ID = 'id';
 
     /**
-     * The services SELECT resource model.
+     * The services entity manager.
      *
      * @since [*next-version*]
      *
-     * @var SelectCapableInterface
+     * @var EntityManagerInterface
      */
-    protected $servicesSelectRm;
-
-    /**
-     * The services SELECT resource model.
-     *
-     * @since [*next-version*]
-     *
-     * @var SelectCapableInterface
-     */
-    protected $sessionRulesSelectRm;
+    protected $servicesEm;
 
     /**
      * The transformer for transforming services and session rules into the UI state.
@@ -89,34 +81,19 @@ class AdminEditServiceUiStateHandler implements InvocableInterface
     protected $stateTransformer;
 
     /**
-     * The expression builder.
-     *
-     * @since [*next-version*]
-     *
-     * @var object
-     */
-    protected $exprBuilder;
-
-    /**
      * Constructor.
      *
      * @since [*next-version*]
      *
-     * @param SelectCapableInterface $servicesSelectRm     The services SELECT resource model.
-     * @param SelectCapableInterface $sessionRulesSelectRm The session rules SELECT resource model.
-     * @param TransformerInterface   $stateTransformer     The transformer for the UI state.
-     * @param object                 $exprBuilder          The expression builder.
+     * @param EntityManagerInterface $servicesEm       The services entity manager.
+     * @param TransformerInterface   $stateTransformer The transformer for the UI state.
      */
     public function __construct(
-        SelectCapableInterface $servicesSelectRm,
-        SelectCapableInterface $sessionRulesSelectRm,
-        TransformerInterface $stateTransformer,
-        $exprBuilder
+        EntityManagerInterface $servicesEm,
+        TransformerInterface $stateTransformer
     ) {
-        $this->servicesSelectRm     = $servicesSelectRm;
-        $this->sessionRulesSelectRm = $sessionRulesSelectRm;
-        $this->stateTransformer     = $stateTransformer;
-        $this->exprBuilder          = $exprBuilder;
+        $this->servicesEm       = $servicesEm;
+        $this->stateTransformer = $stateTransformer;
     }
 
     /**
@@ -142,46 +119,18 @@ class AdminEditServiceUiStateHandler implements InvocableInterface
             return;
         }
 
-        $b = $this->exprBuilder;
-
-        // Get the service
-        $services = $this->servicesSelectRm->select($b->and(
-            $b->eq(
-                $b->ef('service', 'id'),
-                $b->lit($serviceId)
-            ),
-            $b->eq($b->var('post_status'), $b->lit('any'))
-        ));
-        $service = null;
-        foreach ($services as $service) {
-            break;
-        }
-
-        // If service was not found, ignore
-        if ($service === null) {
+        try {
+            // Get the service
+            $service = $this->servicesEm->get($serviceId);
+        } catch (NotFoundExceptionInterface $exception) {
+            // If service was not found, ignore
             return;
         }
 
-        // Get the session rules
-        $rules = $this->sessionRulesSelectRm->select(
-            $b->eq(
-                $b->ef('session_rule', 'service_id'),
-                $b->lit($serviceId)
-            )
-        );
-
         // Create the data, transform and normalize to array
-        $data = [
-            'id'               => $serviceId,
-            'name'             => $this->_containerGet($service, 'name'),
-            'bookings_enabled' => $this->_containerGet($service, 'bookings_enabled'),
-            'session_lengths'  => $this->_containerGet($service, 'session_lengths'),
-            'display_options'  => $this->_containerGet($service, 'display_options'),
-            'timezone'         => $this->_containerGet($service, 'timezone'),
-            'session_rules'    => $rules,
-        ];
-        $state = $this->stateTransformer->transform($data);
-        $state = $this->_normalizeArray($state);
+        $data        = $this->_normalizeArray($service);
+        $transformed = $this->stateTransformer->transform($data);
+        $state       = $this->_normalizeArray($transformed);
 
         // Add to event params
         $event->setParams($state + $event->getParams());
