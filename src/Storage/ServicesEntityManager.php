@@ -213,7 +213,11 @@ class ServicesEntityManager implements EntityManagerInterface
      */
     public function get($id)
     {
-        $results = $this->query(['id' => $id], 1);
+        $results = $this->query([
+            'id'     => $id,
+            'status' => 'any',
+        ], 1);
+
         $results = $this->_normalizeArray($results);
 
         if (count($results) === 0) {

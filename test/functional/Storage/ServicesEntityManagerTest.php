@@ -526,7 +526,7 @@ class ServicesEntityManagerTest extends TestCase
                     $expected = [
                         'post__in'       => [$id],
                         'post_type'      => 'download',
-                        'post_status'    => 'publish',
+                        'post_status'    => 'any',
                         'posts_per_page' => 1,
                         'meta_query'     => [
                             'relation'         => 'AND',
@@ -616,7 +616,7 @@ class ServicesEntityManagerTest extends TestCase
                     $expected = [
                         'post__in'       => [$id],
                         'post_type'      => 'download',
-                        'post_status'    => 'publish',
+                        'post_status'    => 'any',
                         'posts_per_page' => 1,
                         'meta_query'     => [
                             'relation'         => 'AND',
@@ -695,7 +695,7 @@ class ServicesEntityManagerTest extends TestCase
                     $expected = [
                         'post__in'       => [$id],
                         'post_type'      => 'download',
-                        'post_status'    => 'publish',
+                        'post_status'    => 'any',
                         'posts_per_page' => 1,
                         'meta_query'     => [
                             'relation'         => 'AND',
