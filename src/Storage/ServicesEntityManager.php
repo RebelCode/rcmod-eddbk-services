@@ -298,19 +298,21 @@ class ServicesEntityManager implements EntityManagerInterface
      */
     protected function _buildWpQueryArgs($query = [], $limit = null, $offset = null, $orderBy = null, $desc = false)
     {
-        // Convert query filter to IR and to post, since it closely matches the WP Query format
-        $ir   = $this->_entityToServiceIr($query);
-        $args = $this->_serviceIrToPost($ir);
-
         // Get post key field map
         $postKeyMap = $this->_getServicesPostKeyMap();
 
-        // Remove the keys for insertion/updating
+        // Convert query filter to IR for meta data processing
+        $ir = $this->_entityToServiceIr($query);
+
+        // Create post args, since it closely matches the WP Query format
+        $args = $this->_serviceIrToPost($ir);
+
+        // Remove the keys for insertion/updating from post args
         unset($args['meta_input']);
         unset($args['tax_input']);
         unset($args['tags_input']);
 
-        // Create the meta query
+        // Add the meta query to post args, based on meta in the IR
         $args['meta_query'] = ['relation' => 'AND'];
         foreach ($ir['meta'] as $_key => $_value) {
             $args['meta_query'][$_key] = [
