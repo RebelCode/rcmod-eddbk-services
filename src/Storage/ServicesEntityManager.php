@@ -325,9 +325,9 @@ class ServicesEntityManager implements EntityManagerInterface
             $args['post_status'] = ['publish', 'private', 'protected', 'draft', 'trash', 'pending', 'future'];
         }
 
-        // Move id to "post__in"
+        // Move id to `p` index
         if (isset($args['ID'])) {
-            $args['post__in'] = [$args['ID']];
+            $args['p'] = $args['ID'];
             unset($args['ID']);
         }
         // Add limit if provided
