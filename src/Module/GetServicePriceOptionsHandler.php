@@ -66,24 +66,24 @@ class GetServicePriceOptionsHandler implements InvocableInterface
     use StringTranslatingTrait;
 
     /**
-     * The services entity manager.
+     * The services manager.
      *
      * @since [*next-version*]
      *
      * @var EntityManagerInterface
      */
-    protected $servicesEm;
+    protected $servicesManager;
 
     /**
      * Constructor.
      *
      * @since [*next-version*]
      *
-     * @param EntityManagerInterface $servicesEm The services entity manager.
+     * @param EntityManagerInterface $servicesManager The services manager.
      */
-    public function __construct(EntityManagerInterface $servicesEm)
+    public function __construct(EntityManagerInterface $servicesManager)
     {
-        $this->servicesEm = $servicesEm;
+        $this->servicesManager = $servicesManager;
     }
 
     /**
@@ -91,9 +91,9 @@ class GetServicePriceOptionsHandler implements InvocableInterface
      *
      * @since [*next-version*]
      */
-    protected function _getServicesEntityManager()
+    protected function _getServicesManager()
     {
-        return $this->servicesEm;
+        return $this->servicesManager;
     }
 
     /**

@@ -35,7 +35,7 @@ trait GetEddServicePricesCapableTrait
      */
     protected function _getEddServicePrices($serviceId)
     {
-        $manager = $this->_getServicesEntityManager();
+        $manager = $this->_getServicesManager();
         $service = $manager->get($serviceId);
         $lengths = $this->_containerGet($service, 'session_lengths');
         $prices  = [];
@@ -57,13 +57,13 @@ trait GetEddServicePricesCapableTrait
     }
 
     /**
-     * Retrieves the services entity manager.
+     * Retrieves the services manager.
      *
      * @since [*next-version*]
      *
-     * @return EntityManagerInterface The services entity manager interface.
+     * @return EntityManagerInterface The services manager instance.
      */
-    abstract protected function _getServicesEntityManager();
+    abstract protected function _getServicesManager();
 
     /**
      * Normalizes a value to its string representation.

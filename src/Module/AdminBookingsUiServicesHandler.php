@@ -23,13 +23,13 @@ class AdminBookingsUiServicesHandler implements InvocableInterface
     use StringTranslatingTrait;
 
     /**
-     * The services entity manager.
+     * The services manager.
      *
      * @since [*next-version*]
      *
      * @var EntityManagerInterface
      */
-    protected $servicesEm;
+    protected $servicesManager;
 
     /**
      * The transformer for transforming lists of services.
@@ -45,12 +45,12 @@ class AdminBookingsUiServicesHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
-     * @param EntityManagerInterface $servicesEm          The services entity manager.
+     * @param EntityManagerInterface $servicesManager     The services manager.
      * @param TransformerInterface   $servicesTransformer The transformer for transforming lists of services.
      */
-    public function __construct($servicesEm, $servicesTransformer)
+    public function __construct($servicesManager, $servicesTransformer)
     {
-        $this->servicesEm          = $servicesEm;
+        $this->servicesManager     = $servicesManager;
         $this->servicesTransformer = $servicesTransformer;
     }
 
@@ -69,8 +69,8 @@ class AdminBookingsUiServicesHandler implements InvocableInterface
             );
         }
 
-        $services    = $this->servicesEm->query(['status' => 'any']);
-        $services    = $this->servicesTransformer->transform($services);
+        $services = $this->servicesManager->query(['status' => 'any']);
+        $services = $this->servicesTransformer->transform($services);
 
         $eventParams = [
             'services' => $services,
