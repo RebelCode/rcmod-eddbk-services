@@ -11,7 +11,7 @@ define('RCMOD_EDDBK_SERVICES_KEY', 'eddbk_services');
 return function (ContainerInterface $c) {
     return new EddBkServicesModule(
         RCMOD_EDDBK_SERVICES_KEY,
-        [],
+        ['wp_bookings_cqrs'],
         $c->get('config_factory'),
         $c->get('container_factory'),
         $c->get('composite_container_factory'),
