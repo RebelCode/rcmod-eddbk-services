@@ -688,7 +688,9 @@ class ServicesEntityManager implements EntityManagerInterface
         $id   = $this->_normalizeInt($id);
         $data = $this->_normalizeArray($data);
 
-        return \wp_update_post($id, $data);
+        $data['ID'] = $id;
+
+        return \wp_update_post($data);
     }
 
     /**
