@@ -77,112 +77,19 @@ class EddBkServicesModule extends AbstractBaseModule
         return $this->_setupContainer(
             $this->_loadPhpConfigFile(RCMOD_EDDBK_SERVICES_CONFIG_FILE),
             [
-                /*
-                 * PSR-7 server request instance.
-                 *
-                 * @since [*next-version*]
-                 */
-                'server_request' => function (ContainerInterface $c) {
-                    return ServerRequest::fromGlobals();
-                },
-
-                /*
-                 * PSR-7 server response instance.
-                 *
-                 * @since [*next-version*]
-                 */
-                'server_response' => function (ContainerInterface $c) {
-                    return new Response();
-                },
-
-                /*
-                 * The SELECT RM for services.
-                 *
-                 * @since [*next-version*]
-                 */
-                'eddbk_services_select_rm' => function (ContainerInterface $c) {
-                    return new ServicesSelectResourceModel(
-                        $c->get('services/post_type'),
-                        $c->get('map_factory')
-                    );
-                },
-
-                /*
-                 * The INSERT RM for services.
-                 *
-                 * @since [*next-version*]
-                 */
-                'eddbk_services_insert_rm' => function (ContainerInterface $c) {
-                    return new ServicesInsertResourceModel(
-                        $c->get('services/post_type'),
-                        $c->get('services/meta_prefix')
-                    );
-                },
-
-                /*
-                 * The UPDATE RM for services.
-                 *
-                 * @since [*next-version*]
-                 */
-                'eddbk_services_update_rm' => function (ContainerInterface $c) {
-                    return new ServicesUpdateResourceModel();
-                },
-
-                /*
-                 * The DELETE RM for services.
-                 *
-                 * @since [*next-version*]
-                 */
-                'eddbk_services_delete_rm' => function (ContainerInterface $c) {
-                    return new ServicesDeleteResourceModel($c->get('eddbk_services_select_rm'));
-                },
-
                 /**
-                 * The services entity manager.
+                 * The services manager.
                  *
                  * @since [*next-version*]
                  */
-                'eddbk_services_entity_manager' => function (ContainerInterface $c) {
+                'eddbk_services_manager' => function (ContainerInterface $c) {
                     return new ServicesEntityManager(
-                        $c->get('eddbk_services_select_rm'),
-                        $c->get('eddbk_services_insert_rm'),
-                        $c->get('eddbk_services_update_rm'),
-                        $c->get('eddbk_services_delete_rm'),
-                        $c->get('sql_order_factory'),
-                        $c->get('sql_expression_builder')
-                    );
-                },
-
-                /*
-                 * The handler for saving downloads.
-                 *
-                 * @since [*next-version*]
-                 */
-                'eddbk_admin_edit_services_ui_update_handler' => function (ContainerInterface $c) {
-                    return new AdminEditServiceUiUpdateHandler(
-                        $c->get('server_request'),
-                        $c->get('server_response'),
-                        $c->get('eddbk_services_select_rm'),
-                        $c->get('eddbk_services_update_rm'),
+                        $c->get('eddbk_services/post_type'),
+                        $c->get('eddbk_services/meta_prefix'),
+                        $c->get('session_rules_select_rm'),
                         $c->get('session_rules_insert_rm'),
                         $c->get('session_rules_update_rm'),
                         $c->get('session_rules_delete_rm'),
-                        $c->get('sql_expression_builder'),
-                        $c->get('event_manager'),
-                        $c->get('event_factory')
-                    );
-                },
-
-                /*
-                 * The handler for providing the service data as state to the admin bookings UI.
-                 *
-                 * @since [*next-version*]
-                 */
-                'eddbk_admin_edit_services_ui_state_handler' => function (ContainerInterface $c) {
-                    return new AdminEditServiceUiStateHandler(
-                        $c->get('eddbk_services_select_rm'),
-                        $c->get('session_rules_select_rm'),
-                        $c->get('eddbk_admin_edit_services_ui_state_transformer'),
                         $c->get('sql_expression_builder')
                     );
                 },
@@ -194,7 +101,7 @@ class EddBkServicesModule extends AbstractBaseModule
                  */
                 'eddbk_admin_bookings_ui_services_handler' => function (ContainerInterface $c) {
                     return new AdminBookingsUiServicesHandler(
-                        $c->get('eddbk_services_select_rm'),
+                        $c->get('eddbk_services_manager'),
                         $c->get('eddbk_service_list_transformer')
                     );
                 },
@@ -493,8 +400,7 @@ class EddBkServicesModule extends AbstractBaseModule
                  */
                 'eddbk_get_service_price_handler' => function (ContainerInterface $c) {
                     return new GetServicePriceHandler(
-                        $c->get('eddbk_services_select_rm'),
-                        $c->get('sql_expression_builder')
+                        $c->get('eddbk_services_manager')
                     );
                 },
 
@@ -505,8 +411,7 @@ class EddBkServicesModule extends AbstractBaseModule
                  */
                 'eddbk_get_service_price_options_handler' => function (ContainerInterface $c) {
                     return new GetServicePriceOptionsHandler(
-                        $c->get('eddbk_services_select_rm'),
-                        $c->get('sql_expression_builder')
+                        $c->get('eddbk_services_manager')
                     );
                 },
 
@@ -517,8 +422,7 @@ class EddBkServicesModule extends AbstractBaseModule
                  */
                 'eddbk_get_service_has_price_options_handler' => function (ContainerInterface $c) {
                     return new GetServiceHasPriceOptionsHandler(
-                        $c->get('eddbk_services_select_rm'),
-                        $c->get('sql_expression_builder')
+                        $c->get('eddbk_services_manager')
                     );
                 },
             ]
