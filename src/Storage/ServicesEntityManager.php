@@ -214,8 +214,7 @@ class ServicesEntityManager implements EntityManagerInterface
     public function get($id)
     {
         $results = $this->query([
-            'id'     => $id,
-            'status' => 'any',
+            'id' => $id,
         ], 1);
 
         $results = $this->_normalizeArray($results);
@@ -321,9 +320,9 @@ class ServicesEntityManager implements EntityManagerInterface
             ];
         }
 
-        // Add the default status if not included
+        // Set default post status
         if (!isset($args['post_status'])) {
-            $args['post_status'] = 'publish';
+            $args['post_status'] = ['publish', 'private', 'protected', 'draft', 'trash', 'pending', 'future'];
         }
 
         // Move id to "post__in"
