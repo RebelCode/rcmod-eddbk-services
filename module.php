@@ -4,8 +4,8 @@ use Psr\Container\ContainerInterface;
 use RebelCode\EddBookings\Services\Module\EddBkServicesModule;
 
 define('RCMOD_EDDBK_SERVICES_DIR', __DIR__);
-define('RCMOD_EDDBK_SERVICES_CONFIG_DIR', RCMOD_EDDBK_SERVICES_DIR);
-define('RCMOD_EDDBK_SERVICES_CONFIG_FILE', RCMOD_EDDBK_SERVICES_CONFIG_DIR . '/config.php');
+define('RCMOD_EDDBK_SERVICES_CONFIG_FILE', RCMOD_EDDBK_SERVICES_DIR . '/config.php');
+define('RCMOD_EDDBK_SERVICES_SERVICES_FILE', RCMOD_EDDBK_SERVICES_DIR . '/services.php');
 define('RCMOD_EDDBK_SERVICES_KEY', 'eddbk_services');
 
 return function (ContainerInterface $c) {
