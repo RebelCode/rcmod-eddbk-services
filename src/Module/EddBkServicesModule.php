@@ -2,19 +2,14 @@
 
 namespace RebelCode\EddBookings\Services\Module;
 
-use ArrayIterator;
 use Dhii\Config\ConfigFactoryInterface;
 use Dhii\Data\Container\ContainerFactoryInterface;
 use Dhii\Event\EventFactoryInterface;
 use Dhii\Exception\InternalException;
-use Dhii\Iterator\NormalizeIteratorCapableTrait;
-use Dhii\Util\Normalization\NormalizeArrayCapableTrait;
 use Dhii\Util\String\StringableInterface as Stringable;
-use IteratorIterator;
 use Psr\Container\ContainerInterface;
 use Psr\EventManager\EventManagerInterface;
 use RebelCode\Modular\Module\AbstractBaseModule;
-use Traversable;
 
 /**
  * Module class.
@@ -23,12 +18,6 @@ use Traversable;
  */
 class EddBkServicesModule extends AbstractBaseModule
 {
-    /* @since [*next-version*] */
-    use NormalizeArrayCapableTrait;
-
-    /* @since [*next-version*] */
-    use NormalizeIteratorCapableTrait;
-
     /**
      * Constructor.
      *
