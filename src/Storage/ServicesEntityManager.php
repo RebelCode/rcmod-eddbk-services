@@ -319,17 +319,6 @@ class ServicesEntityManager implements EntityManagerInterface
             ];
         }
 
-        // Add the default "bookings enabled" meta query if it was not given
-        if (!isset($query['bookings_enabled'])) {
-            $args['meta_query']['bookings_enabled'] = [
-                'key'   => $this->metaPrefix . 'bookings_enabled',
-                'value' => '1',
-            ];
-        }
-
-        // Set the post type
-        $args['post_type'] = $this->postType;
-
         // Add the default status if not included
         if (!isset($args['post_status'])) {
             $args['post_status'] = 'publish';
@@ -415,8 +404,12 @@ class ServicesEntityManager implements EntityManagerInterface
         $postKeys = $this->_getServicesPostKeyMap();
 
         $ir = [
-            'post'         => [],
-            'meta'         => [],
+            'post'         => [
+                'post_type' => $this->postType,
+            ],
+            'meta'         => [
+                'bookings_enabled' => '1',
+            ],
             'availability' => null,
             'image_id'     => null,
         ];
