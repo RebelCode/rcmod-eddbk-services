@@ -1,11 +1,11 @@
 <?php
 
 return [
-    'services' => [
+    'eddbk_services' => [
         'post_type'     => 'download',
+        'meta_prefix'   => 'eddbk_',
         'session_rules' => [
             'datetime_format' => DATE_ATOM,
         ],
-        'meta_prefix'   => 'eddbk_',
     ],
 ];
