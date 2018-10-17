@@ -176,7 +176,7 @@ class EddBkServicesServiceList extends ArrayObject
                     ],
                     [
                         MapTransformer::K_SOURCE      => 'availability',
-                        MapTransformer::K_TARGET      => 'availabilities',
+                        MapTransformer::K_TARGET      => 'availability',
                         MapTransformer::K_TRANSFORMER => $c->get('eddbk_session_rule_list_transformer'),
                     ],
                 ]);
