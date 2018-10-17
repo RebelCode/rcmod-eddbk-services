@@ -500,13 +500,14 @@ class ServicesEntityManager implements EntityManagerInterface
 
         // Get the service's timezone and availability
         $availability = $ir['availability'];
+        $rules        = $availability['rules'];
         $timezone     = isset($ir['meta']['timezone'])
             ? $ir['meta']['timezone']
             : 'UTC';
 
         $ruleIds = [];
 
-        foreach ($availability as $_ruleData) {
+        foreach ($rules as $_ruleData) {
             $_rule = $this->_processSessionRuleData($id, $_ruleData, $timezone);
 
             // If rule has an ID, update the existing rule
