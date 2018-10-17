@@ -32,11 +32,19 @@ trait GetEddServicePricesCapableTrait
      *
      * @return array An array with price data elements. Each element has the keys 'index', 'name' and 'amount' which
      *               correspond to an ordinal identifier, human-friendly name and price amount respectively.
+     *
+     * @throws RuntimeException If a service with the given ID does not exist.
      */
     protected function _getEddServicePrices($serviceId)
     {
-        $manager = $this->_getServicesManager();
-        $service = $manager->get($serviceId);
+        try {
+            $service = $this->_getServicesManager()->get($serviceId);
+        } catch (NotFoundExceptionInterface $exception) {
+            throw $this->_createRuntimeException(
+                $this->__('Service with ID "%s" does not exist', [$serviceId]), null, $exception
+            );
+        }
+
         $lengths = $this->_containerGet($service, 'session_lengths');
         $prices  = [];
         $index   = 0;
