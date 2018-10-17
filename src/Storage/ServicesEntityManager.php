@@ -311,13 +311,19 @@ class ServicesEntityManager implements EntityManagerInterface
         unset($args['tax_input']);
         unset($args['tags_input']);
 
-        // Add the meta query to post args, based on meta in the IR
-        $args['meta_query'] = ['relation' => 'AND'];
-        foreach ($ir['meta'] as $_key => $_value) {
-            $args['meta_query'][$_key] = [
-                'key'   => $this->metaPrefix . $_key,
-                'value' => $_value,
-            ];
+        // Add the search term if given
+        if (isset($query['s'])) {
+            $args['s'] = $query['s'];
+        } else {
+            // Only if `s` search term is not given - because WP can't handle both at the same time!!
+            $args['meta_query'] = ['relation' => 'AND'];
+            // Add the meta query to post args, based on meta in the IR
+            foreach ($ir['meta'] as $_key => $_value) {
+                $args['meta_query'][$_key] = [
+                    'key'   => $this->metaPrefix . $_key,
+                    'value' => $_value,
+                ];
+            }
         }
 
         // Set default post status
