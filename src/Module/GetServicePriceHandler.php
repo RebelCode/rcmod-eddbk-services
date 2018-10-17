@@ -16,7 +16,7 @@ use Dhii\Iterator\ResolveIteratorCapableTrait;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use Psr\EventManager\EventInterface;
-use RebelCode\Entity\EntityManagerInterface;
+use RebelCode\Entity\GetCapableManagerInterface;
 use RuntimeException;
 
 /**
@@ -70,7 +70,7 @@ class GetServicePriceHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
-     * @var EntityManagerInterface
+     * @var GetCapableManagerInterface
      */
     protected $servicesManager;
 
@@ -79,9 +79,9 @@ class GetServicePriceHandler implements InvocableInterface
      *
      * @since [*next-version*]
      *
-     * @param EntityManagerInterface $servicesManager The services manager.
+     * @param GetCapableManagerInterface $servicesManager The services manager.
      */
-    public function __construct(EntityManagerInterface $servicesManager)
+    public function __construct(GetCapableManagerInterface $servicesManager)
     {
         $this->servicesManager = $servicesManager;
     }
