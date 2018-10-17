@@ -368,10 +368,8 @@ class ServicesEntityManager implements EntityManagerInterface
 
         $sessionRules = $this->rulesSelectRm->select(
             $b->eq(
-                $b->eq(
-                    $b->ef('session_rule', 'service_id'),
-                    $b->lit($post->ID)
-                )
+                $b->ef('session_rule', 'service_id'),
+                $b->lit($post->ID)
             )
         );
 
