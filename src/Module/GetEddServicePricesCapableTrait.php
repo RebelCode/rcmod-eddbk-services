@@ -9,6 +9,7 @@ use InvalidArgumentException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use RebelCode\Entity\EntityManagerInterface;
 use RuntimeException;
 use Exception as RootException;
 use Dhii\Util\String\StringableInterface as Stringable;
@@ -31,26 +32,19 @@ trait GetEddServicePricesCapableTrait
      *
      * @return array An array with price data elements. Each element has the keys 'index', 'name' and 'amount' which
      *               correspond to an ordinal identifier, human-friendly name and price amount respectively.
+     *
+     * @throws RuntimeException If a service with the given ID does not exist.
      */
     protected function _getEddServicePrices($serviceId)
     {
-        $b = $this->_getExprBuilder();
-        $s = $this->_getServicesSelectRm();
-
-        $services = $s->select($b->and(
-            $b->eq(
-                $b->ef('service', 'id'),
-                $b->lit($this->_normalizeString($serviceId))
-            )
-        ));
-
-        if (($c = $this->_countIterable($services)) !== 1) {
+        try {
+            $service = $this->_getServicesManager()->get($serviceId);
+        } catch (NotFoundExceptionInterface $exception) {
             throw $this->_createRuntimeException(
-                $this->__('Service ID "%1$s" matched %2$d services', [$serviceId, $c])
+                $this->__('Service with ID "%s" does not exist', [$serviceId]), null, $exception
             );
         }
 
-        $service = reset($services);
         $lengths = $this->_containerGet($service, 'session_lengths');
         $prices  = [];
         $index   = 0;
@@ -71,22 +65,13 @@ trait GetEddServicePricesCapableTrait
     }
 
     /**
-     * Retrieves the expression builder.
+     * Retrieves the services manager.
      *
      * @since [*next-version*]
      *
-     * @return object The expression builder instance.
+     * @return EntityManagerInterface The services manager instance.
      */
-    abstract protected function _getExprBuilder();
-
-    /**
-     * Retrieves the services SELECT resource model.
-     *
-     * @since [*next-version*]
-     *
-     * @return SelectCapableInterface The services SELECT resource model instance.
-     */
-    abstract protected function _getServicesSelectRm();
+    abstract protected function _getServicesManager();
 
     /**
      * Normalizes a value to its string representation.

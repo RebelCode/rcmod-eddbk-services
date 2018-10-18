@@ -13,11 +13,10 @@ use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Invocation\InvocableInterface;
 use Dhii\Iterator\CountIterableCapableTrait;
 use Dhii\Iterator\ResolveIteratorCapableTrait;
-use Dhii\Storage\Resource\SelectCapableInterface;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
-use InvalidArgumentException;
 use Psr\EventManager\EventInterface;
+use RebelCode\Entity\GetCapableManagerInterface;
 use RuntimeException;
 
 /**
@@ -67,91 +66,34 @@ class GetServicePriceOptionsHandler implements InvocableInterface
     use StringTranslatingTrait;
 
     /**
-     * The services SELECT resource model.
+     * The services manager.
      *
      * @since [*next-version*]
      *
-     * @var SelectCapableInterface
+     * @var GetCapableManagerInterface
      */
-    protected $servicesSelectRm;
-
-    /**
-     * The expression builder.
-     *
-     * @since [*next-version*]
-     *
-     * @var object
-     */
-    protected $exprBuilder;
+    protected $servicesManager;
 
     /**
      * Constructor.
      *
      * @since [*next-version*]
      *
-     * @param SelectCapableInterface $servicesSelectRm The services SELECT resource model.
-     * @param object                 $exprBuilder      The expression builder.
+     * @param GetCapableManagerInterface $servicesManager The services manager.
      */
-    public function __construct(SelectCapableInterface $servicesSelectRm, $exprBuilder)
+    public function __construct(GetCapableManagerInterface $servicesManager)
     {
-        $this->_setServicesSelectRm($servicesSelectRm);
-        $this->_setExprBuilder($exprBuilder);
+        $this->servicesManager = $servicesManager;
     }
 
     /**
-     * Retrieves the services select resource model.
+     * {@inheritdoc}
      *
      * @since [*next-version*]
-     *
-     * @return SelectCapableInterface The services select resource model instance.
      */
-    protected function _getServicesSelectRm()
+    protected function _getServicesManager()
     {
-        return $this->servicesSelectRm;
-    }
-
-    /**
-     * Sets the services SELECT resource model.
-     *
-     * @since [*next-version*]
-     *
-     * @param SelectCapableInterface $servicesSelectRm The services SELECT resource model.
-     *
-     * @throws InvalidArgumentException If the argument is not a SELECT resource model.
-     */
-    protected function _setServicesSelectRm($servicesSelectRm)
-    {
-        if ($servicesSelectRm !== null && !($servicesSelectRm instanceof SelectCapableInterface)) {
-            throw $this->_createInvalidArgumentException(
-                $this->__('Argument is not a SELECT resource model.'), null, null, $servicesSelectRm
-            );
-        }
-
-        $this->servicesSelectRm = $servicesSelectRm;
-    }
-
-    /**
-     * Retrieves the expression builder.
-     *
-     * @since [*next-version*]
-     *
-     * @return object The expression builder instance.
-     */
-    protected function _getExprBuilder()
-    {
-        return $this->exprBuilder;
-    }
-
-    /**
-     * Sets the expression builder.
-     *
-     * @since [*next-version*]
-     *
-     * @param mixed $exprBuilder The expression builder instance.
-     */
-    protected function _setExprBuilder($exprBuilder)
-    {
-        $this->exprBuilder = $exprBuilder;
+        return $this->servicesManager;
     }
 
     /**
