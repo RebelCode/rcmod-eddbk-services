@@ -740,6 +740,20 @@ class ServicesEntityManager implements EntityManagerInterface
     }
 
     /**
+     * Retrieves the featured image ID for a WordPress post.
+     *
+     * @since [*next-version*]
+     *
+     * @param int|string $id The ID of the service.
+     *
+     * @return string The post image ID.
+     */
+    protected function _getPostImageId($id)
+    {
+        return \get_post_thumbnail_id($id);
+    }
+
+    /**
      * Retrieves the featured image url for a WordPress post.
      *
      * @since [*next-version*]
