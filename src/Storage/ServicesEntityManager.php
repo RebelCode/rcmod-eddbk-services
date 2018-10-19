@@ -384,6 +384,7 @@ class ServicesEntityManager implements EntityManagerInterface
             'name'             => $post->post_title,
             'description'      => $post->post_excerpt,
             'status'           => $post->post_status,
+            'image_id'         => $this->_getPostImageId($post->ID),
             'image_url'        => $this->_getPostImageUrl($post->ID),
             'bookings_enabled' => $this->_getPostMeta($post->ID, $this->metaPrefix . 'bookings_enabled', false),
             'session_lengths'  => $this->_getPostMeta($post->ID, $this->metaPrefix . 'session_lengths', []),
