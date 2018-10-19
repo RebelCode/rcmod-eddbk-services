@@ -155,6 +155,10 @@ class EddBkServicesServiceList extends ArrayObject
                         MapTransformer::K_SOURCE => 'status',
                     ],
                     [
+                        MapTransformer::K_SOURCE => 'image_id',
+                        MapTransformer::K_TARGET => 'imageId',
+                    ],
+                    [
                         MapTransformer::K_SOURCE => 'image_url',
                         MapTransformer::K_TARGET => 'imageSrc',
                     ],
