@@ -747,7 +747,7 @@ class ServicesEntityManager implements EntityManagerInterface
      *
      * @param int|string $id The ID of the service.
      *
-     * @return string The post image ID.
+     * @return int|string The post image ID.
      */
     protected function _getPostImageId($id)
     {
