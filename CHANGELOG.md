@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [[*next-version*]] - YYYY-MM-DD
 ### Added
 - New services entity manager replaces the CQRS resource models.
+- Service now includes the ID of the image.
 
 ### Changed
 - Removed the services CQRS resource models.

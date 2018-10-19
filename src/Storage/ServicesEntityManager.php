@@ -384,6 +384,7 @@ class ServicesEntityManager implements EntityManagerInterface
             'name'             => $post->post_title,
             'description'      => $post->post_excerpt,
             'status'           => $post->post_status,
+            'image_id'         => $this->_getPostImageId($post->ID),
             'image_url'        => $this->_getPostImageUrl($post->ID),
             'bookings_enabled' => $this->_getPostMeta($post->ID, $this->metaPrefix . 'bookings_enabled', false),
             'session_lengths'  => $this->_getPostMeta($post->ID, $this->metaPrefix . 'session_lengths', []),
@@ -737,6 +738,20 @@ class ServicesEntityManager implements EntityManagerInterface
         return ($metaValue === '')
             ? $default
             : $metaValue;
+    }
+
+    /**
+     * Retrieves the featured image ID for a WordPress post.
+     *
+     * @since [*next-version*]
+     *
+     * @param int|string $id The ID of the service.
+     *
+     * @return int|string The post image ID.
+     */
+    protected function _getPostImageId($id)
+    {
+        return \get_post_thumbnail_id($id);
     }
 
     /**
