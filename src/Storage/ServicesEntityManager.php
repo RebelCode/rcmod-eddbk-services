@@ -758,7 +758,9 @@ class ServicesEntityManager implements EntityManagerInterface
      */
     protected function _getPostImageId($id)
     {
-        return \get_post_thumbnail_id($id);
+        $imageId = \get_post_thumbnail_id($id);
+
+        return empty($imageId) ? null : $this->_normalizeInt($imageId);
     }
 
     /**
