@@ -389,6 +389,7 @@ class ServicesEntityManager implements EntityManagerInterface
             'bookings_enabled' => $this->_getPostMeta($post->ID, $this->metaPrefix . 'bookings_enabled', false),
             'session_lengths'  => $this->_getPostMeta($post->ID, $this->metaPrefix . 'session_lengths', []),
             'display_options'  => $this->_getPostMeta($post->ID, $this->metaPrefix . 'display_options', []),
+            'color'            => $this->_getPostMeta($post->ID, $this->metaPrefix . 'color', null),
             'timezone'         => $this->_getPostMeta($post->ID, $this->metaPrefix . 'timezone', 'UTC'),
             'availability'     => $sessionRules,
         ];

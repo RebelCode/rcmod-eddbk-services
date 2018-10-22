@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - New services entity manager replaces the CQRS resource models.
 - Service now includes the ID of the image.
+- Service now includes a color value for admin display purposes.
 
 ### Changed
 - Removed the services CQRS resource models.
