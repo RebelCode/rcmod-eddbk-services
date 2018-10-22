@@ -783,7 +783,7 @@ class ServicesEntityManager implements EntityManagerInterface
      * @param int|string $postId  Post ID or object where thumbnail should be attached.
      * @param int|string $imageId Thumbnail to attach.
      *
-     * @return int|false Post meta ID on success, false on failure.
+     * @return bool True on success, false on failure.
      */
     protected function _wpSetPostThumbnail($postId, $imageId)
     {
