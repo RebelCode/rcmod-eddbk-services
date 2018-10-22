@@ -479,8 +479,14 @@ class ServicesEntityManager implements EntityManagerInterface
      */
     protected function _updateServiceExternals($id, $ir)
     {
-        if (isset($ir['image_id'])) {
-            $this->_wpSetPostThumbnail($id, $ir['image_id']);
+        if (array_key_exists('image_id', $ir)) {
+            $imageId = $ir['image_id'];
+
+            if ($imageId === null) {
+                $this->_wpRemovePostThumbnail($id);
+            } else {
+                $this->_wpSetPostThumbnail($id, $imageId);
+            }
         }
 
         if (isset($ir['availability'])) {
@@ -752,7 +758,9 @@ class ServicesEntityManager implements EntityManagerInterface
      */
     protected function _getPostImageId($id)
     {
-        return \get_post_thumbnail_id($id);
+        $imageId = \get_post_thumbnail_id($id);
+
+        return empty($imageId) ? null : $this->_normalizeInt($imageId);
     }
 
     /**
@@ -777,7 +785,7 @@ class ServicesEntityManager implements EntityManagerInterface
      * @param int|string $postId  Post ID or object where thumbnail should be attached.
      * @param int|string $imageId Thumbnail to attach.
      *
-     * @return int|false Post meta ID on success, false on failure.
+     * @return bool True on success, false on failure.
      */
     protected function _wpSetPostThumbnail($postId, $imageId)
     {
@@ -785,5 +793,19 @@ class ServicesEntityManager implements EntityManagerInterface
         $imageId = $this->_normalizeInt($imageId);
 
         return \set_post_thumbnail($postId, $imageId);
+    }
+
+    /**
+     * Removes a post thumbnail image.
+     *
+     * @since [*next-version*]
+     *
+     * @param int|string $postId Post ID or object for which the thumbnail will be removed.
+     *
+     * @return bool True on success, false on failure.
+     */
+    protected function _wpRemovePostThumbnail($postId)
+    {
+        return \delete_post_thumbnail($this->_normalizeInt($postId));
     }
 }
