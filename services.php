@@ -10,6 +10,7 @@ use RebelCode\EddBookings\Services\Module\AdminDeleteServiceHandler;
 use RebelCode\EddBookings\Services\Module\GetServiceHasPriceOptionsHandler;
 use RebelCode\EddBookings\Services\Module\GetServicePriceHandler;
 use RebelCode\EddBookings\Services\Module\GetServicePriceOptionsHandler;
+use RebelCode\EddBookings\Services\Module\HideServicesFromDownloadsHandler;
 use RebelCode\EddBookings\Services\Storage\ServicesEntityManager;
 use RebelCode\Transformers\CallbackTransformer;
 use RebelCode\Transformers\MapTransformer;
@@ -430,6 +431,18 @@ class EddBkServicesServiceList extends ArrayObject
                     $c->get('eddbk_services_manager')
                 );
             },
+
+            /**
+             * The handler that hides services from the downloads list.
+             *
+             * @since [*next-version*]
+             */
+            'eddbk_hide_services_from_downloads_list_handler' => function (ContainerInterface $c) {
+                return new HideServicesFromDownloadsHandler(
+                    $c->get('eddbk_services/post_type'),
+                    $c->get('eddbk_services/meta_prefix')
+                );
+            }
         ];
     }
 }
