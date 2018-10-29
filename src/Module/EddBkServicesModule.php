@@ -84,5 +84,8 @@ class EddBkServicesModule extends AbstractBaseModule
 
         // Event for the filtering a Download's price options flag
         $this->_attach('edd_has_variable_prices', $c->get('eddbk_get_service_has_price_options_handler'));
+
+        // Event for filtering the query to hide services from the Downloads list
+        $this->_attach('parse_query', $c->get('eddbk_hide_services_from_downloads_list_handler'));
     }
 }
