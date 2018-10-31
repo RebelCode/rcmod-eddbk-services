@@ -387,7 +387,7 @@ class ServicesEntityManager implements EntityManagerInterface
             'image_id'         => $this->_getPostImageId($post->ID),
             'image_url'        => $this->_getPostImageUrl($post->ID),
             'bookings_enabled' => $this->_getPostMeta($post->ID, $this->metaPrefix . 'bookings_enabled', false),
-            'session_lengths'  => $this->_getPostMeta($post->ID, $this->metaPrefix . 'session_lengths', []),
+            'session_types'    => $this->_getPostMeta($post->ID, $this->metaPrefix . 'session_types', []),
             'display_options'  => $this->_getPostMeta($post->ID, $this->metaPrefix . 'display_options', []),
             'color'            => $this->_getPostMeta($post->ID, $this->metaPrefix . 'color', null),
             'timezone'         => $this->_getPostMeta($post->ID, $this->metaPrefix . 'timezone', 'UTC'),
