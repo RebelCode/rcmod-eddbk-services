@@ -45,14 +45,14 @@ trait GetEddServicePricesCapableTrait
             );
         }
 
-        $lengths = $this->_containerGet($service, 'session_lengths');
-        $prices  = [];
-        $index   = 0;
+        $types  = $this->_containerGet($service, 'session_types');
+        $prices = [];
+        $index  = 0;
 
-        foreach ($lengths as $_lengthInfo) {
-            $_length = (int) $this->_containerGet($_lengthInfo, 'sessionLength');
-            $_name   = CarbonInterval::seconds($_length)->cascade()->forHumans();
-            $_price  = (float) $this->_containerGet($_lengthInfo, 'price');
+        foreach ($types as $_type) {
+            $_duration = (int) $this->_containerGet($_type, 'duration');
+            $_name     = CarbonInterval::seconds($_duration)->cascade()->forHumans();
+            $_price    = (float) $this->_containerGet($_type, 'price');
 
             $prices[] = [
                 'index'  => ++$index,
