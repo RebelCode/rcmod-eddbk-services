@@ -508,7 +508,9 @@ class ServicesEntityManager implements EntityManagerInterface
 
         // Get the service's timezone and availability
         $availability = $ir['availability'];
-        $rules        = $availability['rules'];
+        $rules        = isset($availability['rules'])
+            ? $availability['rules']
+            : [];
         $timezone     = isset($ir['meta']['timezone'])
             ? $ir['meta']['timezone']
             : 'UTC';
