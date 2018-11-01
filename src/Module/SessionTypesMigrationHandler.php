@@ -65,7 +65,7 @@ class SessionTypesMigrationHandler implements InvocableInterface
      * @param Stringable|string $postType   The post type for services.
      * @param Stringable|string $metaPrefix The services post meta prefix.
      */
-    public function __construct(wpdb $wpdb, $postType, $metaPrefix)
+    public function __construct($wpdb, $postType, $metaPrefix)
     {
         $this->wpdb       = $wpdb;
         $this->postType   = $postType;
