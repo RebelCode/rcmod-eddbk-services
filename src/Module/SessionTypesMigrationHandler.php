@@ -91,11 +91,11 @@ class SessionTypesMigrationHandler implements InvocableInterface
         $metaKey = $this->metaPrefix . static::SESSION_TYPES_META_KEY;
 
         foreach ($records as $record) {
-            $id    = $record['id'];
-            $value = unserialize($record['value']);
-            $new   = $this->_convertSessionTypeMeta($value);
+            $id       = $record['id'];
+            $lengths  = unserialize($record['value']);
+            $newTypes = array_map([$this, '_convertSessionTypeMeta'], $lengths);
 
-            update_post_meta($id, $metaKey, $new);
+            update_post_meta($id, $metaKey, $newTypes);
         }
     }
 
