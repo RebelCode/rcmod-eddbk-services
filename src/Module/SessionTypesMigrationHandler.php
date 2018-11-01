@@ -154,10 +154,10 @@ class SessionTypesMigrationHandler implements InvocableInterface
 
         return [
             'label' => '',
+            'price' => $meta['price'],
             'type'  => 'fixed_duration',
             'data'  => [
                 'duration' => $meta['sessionLength'],
-                'price'    => $meta['price'],
             ],
         ];
     }
