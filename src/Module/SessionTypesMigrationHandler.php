@@ -5,8 +5,12 @@ namespace RebelCode\EddBookings\Services\Module;
 use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
 use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Invocation\InvocableInterface;
+use Dhii\Util\Normalization\NormalizeIntCapableTrait;
+use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Psr\EventManager\EventInterface;
+use stdClass;
+use Traversable;
 use wpdb;
 
 /**
@@ -16,6 +20,12 @@ use wpdb;
  */
 class SessionTypesMigrationHandler implements InvocableInterface
 {
+    /* @since [*next-version*] */
+    use NormalizeIntCapableTrait;
+
+    /* @since [*next-version*] */
+    use NormalizeStringCapableTrait;
+
     /* @since [*next-version*] */
     use CreateInvalidArgumentExceptionCapableTrait;
 
@@ -95,7 +105,7 @@ class SessionTypesMigrationHandler implements InvocableInterface
             $lengths  = unserialize($record['value']);
             $newTypes = array_map([$this, '_convertSessionTypeMeta'], $lengths);
 
-            update_post_meta($id, $metaKey, $newTypes);
+            $this->_wpUpdatePostMeta($id, $metaKey, $newTypes);
         }
     }
 
@@ -150,5 +160,22 @@ class SessionTypesMigrationHandler implements InvocableInterface
                 'price'    => $meta['price'],
             ],
         ];
+    }
+
+    /**
+     * Updates the meta data for the post with a given ID.
+     *
+     * @since [*next-version*]
+     *
+     * @param int|string|Stringable      $id    The ID of the post to update.
+     * @param string|Stringable          $key   The meta key.
+     * @param array|stdClass|Traversable $value The meta value.
+     */
+    protected function _wpUpdatePostMeta($id, $key, $value)
+    {
+        $id  = $this->_normalizeInt($id);
+        $key = $this->_normalizeString($key);
+
+        \update_post_meta($id, $key, $value);
     }
 }
