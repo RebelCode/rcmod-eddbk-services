@@ -11,6 +11,7 @@ use RebelCode\EddBookings\Services\Module\GetServiceHasPriceOptionsHandler;
 use RebelCode\EddBookings\Services\Module\GetServicePriceHandler;
 use RebelCode\EddBookings\Services\Module\GetServicePriceOptionsHandler;
 use RebelCode\EddBookings\Services\Module\HideServicesFromDownloadsHandler;
+use RebelCode\EddBookings\Services\Module\SessionTypesMigrationHandler;
 use RebelCode\EddBookings\Services\Storage\ServicesEntityManager;
 use RebelCode\Transformers\CallbackTransformer;
 use RebelCode\Transformers\MapTransformer;
@@ -441,6 +442,19 @@ class EddBkServicesServiceList extends ArrayObject
                 return new HideServicesFromDownloadsHandler(
                     $c->get('eddbk_services/post_type'),
                     $c->get('eddbk_services/meta_prefix')
+                );
+            },
+
+            /*
+             * The migration handler for when the database is upgraded to version 3.
+             *
+             * @since [*next-version*]
+             */
+            'eddbk_services_migration_3_handler' => function (ContainerInterface $c) {
+                return new SessionTypesMigrationHandler(
+                    $c->get('wpdb'),
+                    $c->get('eddkb_services/post_type'),
+                    $c->get('eddkb_services/meta_prefix')
                 );
             }
         ];

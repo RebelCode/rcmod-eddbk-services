@@ -70,6 +70,8 @@ class EddBkServicesModule extends AbstractBaseModule
             return;
         }
 
+        $this->_attachMigrationHandlers($c);
+
         // Event for providing the booking services for the admin bookings UI
         $this->_attach('eddbk_admin_bookings_ui_services', $c->get('eddbk_admin_bookings_ui_services_handler'));
 
@@ -87,5 +89,18 @@ class EddBkServicesModule extends AbstractBaseModule
 
         // Event for filtering the query to hide services from the Downloads list
         $this->_attach('parse_query', $c->get('eddbk_hide_services_from_downloads_list_handler'));
+    }
+
+    /**
+     * Attaches the migration handlers.
+     *
+     * @since [*next-version*]
+     *
+     * @param ContainerInterface $c The container from which to retrieve event handlers.
+     */
+    protected function _attachMigrationHandlers(ContainerInterface $c)
+    {
+        // Event for after migrating to DB version 3 (changes session lengths to session types)
+        $this->_attach('wp_bookings_cqrs_after_migration_to_3', $c->get('eddbk_services_migration_3_handler'));
     }
 }
