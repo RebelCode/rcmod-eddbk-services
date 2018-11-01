@@ -453,8 +453,8 @@ class EddBkServicesServiceList extends ArrayObject
             'eddbk_services_migration_3_handler' => function (ContainerInterface $c) {
                 return new SessionTypesMigrationHandler(
                     $c->get('wpdb'),
-                    $c->get('eddkb_services/post_type'),
-                    $c->get('eddkb_services/meta_prefix')
+                    $c->get('eddbk_services/post_type'),
+                    $c->get('eddbk_services/meta_prefix')
                 );
             }
         ];
