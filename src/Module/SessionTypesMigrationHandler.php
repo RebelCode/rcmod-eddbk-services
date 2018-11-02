@@ -153,6 +153,7 @@ class SessionTypesMigrationHandler implements InvocableInterface
         }
 
         return [
+            'id'    => null,
             'label' => '',
             'price' => $meta['price'],
             'type'  => 'fixed_duration',
