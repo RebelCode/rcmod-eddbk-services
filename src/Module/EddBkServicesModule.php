@@ -72,9 +72,6 @@ class EddBkServicesModule extends AbstractBaseModule
 
         $this->_attachMigrationHandlers($c);
 
-        // Event for providing the booking services for the admin bookings UI
-        $this->_attach('eddbk_admin_bookings_ui_services', $c->get('eddbk_admin_bookings_ui_services_handler'));
-
         // Event for deleting service-related entities when a Download is deleted
         $this->_attach('before_delete_post', $c->get('eddbk_admin_delete_service_handler'));
 
