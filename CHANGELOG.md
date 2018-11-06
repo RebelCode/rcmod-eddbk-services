@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
+### Changed
+- Renamed `session_lengths` to `session_types`.
+- Session type labels are used as price names, if they are given.
 
 ## [0.1-alpha12] - 2018-10-30
 ### Added

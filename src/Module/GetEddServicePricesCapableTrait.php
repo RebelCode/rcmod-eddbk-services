@@ -45,14 +45,23 @@ trait GetEddServicePricesCapableTrait
             );
         }
 
-        $lengths = $this->_containerGet($service, 'session_lengths');
-        $prices  = [];
-        $index   = 0;
+        $types  = $this->_containerGet($service, 'session_types');
+        $prices = [];
+        $index  = 0;
 
-        foreach ($lengths as $_lengthInfo) {
-            $_length = (int) $this->_containerGet($_lengthInfo, 'sessionLength');
-            $_name   = CarbonInterval::seconds($_length)->cascade()->forHumans();
-            $_price  = (float) $this->_containerGet($_lengthInfo, 'price');
+        foreach ($types as $_type) {
+            // Get the price from the data
+            $_price = (float) $this->_containerGet($_type, 'price');
+
+            try {
+                // Get the session type label and use it as the price name
+                $_name = $this->_containerGet($_type, 'label');
+            } catch (NotFoundExceptionInterface $exception) {
+                // Get the duration, format it for humans and use it as the price name
+                $_data = $this->_containerGet($_type, 'data');
+                $_duration = (int) $this->_containerGet($_data, 'duration');
+                $_name     = CarbonInterval::seconds($_duration)->cascade()->forHumans();
+            }
 
             $prices[] = [
                 'index'  => ++$index,

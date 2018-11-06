@@ -379,6 +379,9 @@ class ServicesEntityManager implements EntityManagerInterface
             )
         );
 
+        $sessionTypes = $this->_getPostMeta($post->ID, $this->metaPrefix . 'session_types', []);
+        $sessionTypes = $this->_normalizeSessionTypes($sessionTypes);
+
         $service = [
             'id'               => $post->ID,
             'name'             => $post->post_title,
@@ -387,7 +390,7 @@ class ServicesEntityManager implements EntityManagerInterface
             'image_id'         => $this->_getPostImageId($post->ID),
             'image_url'        => $this->_getPostImageUrl($post->ID),
             'bookings_enabled' => $this->_getPostMeta($post->ID, $this->metaPrefix . 'bookings_enabled', false),
-            'session_lengths'  => $this->_getPostMeta($post->ID, $this->metaPrefix . 'session_lengths', []),
+            'session_types'    => $sessionTypes,
             'display_options'  => $this->_getPostMeta($post->ID, $this->metaPrefix . 'display_options', []),
             'color'            => $this->_getPostMeta($post->ID, $this->metaPrefix . 'color', null),
             'timezone'         => $this->_getPostMeta($post->ID, $this->metaPrefix . 'timezone', 'UTC'),
@@ -445,6 +448,10 @@ class ServicesEntityManager implements EntityManagerInterface
             $ir['meta'][$_key] = $eArray[$_key];
         }
 
+        if (isset($ir['meta']['session_types'])) {
+            $ir['meta']['session_types'] = $this->_normalizeSessionTypes($ir['meta']['session_types']);
+        }
+
         return $ir;
     }
 
@@ -467,6 +474,26 @@ class ServicesEntityManager implements EntityManagerInterface
         }
 
         return $post;
+    }
+
+    /**
+     * Normalizes the session types.
+     *
+     * @since [*next-version*]
+     *
+     * @param array $sessionTypes The session types.
+     *
+     * @return array The normalized session types.
+     */
+    protected function _normalizeSessionTypes(array $sessionTypes)
+    {
+        $hashed = array_map(function($st) {
+            $st['id'] = md5(json_encode($st));
+
+            return $st;
+        }, $sessionTypes);
+
+        return $hashed;
     }
 
     /**
@@ -508,7 +535,9 @@ class ServicesEntityManager implements EntityManagerInterface
 
         // Get the service's timezone and availability
         $availability = $ir['availability'];
-        $rules        = $availability['rules'];
+        $rules        = isset($availability['rules'])
+            ? $availability['rules']
+            : [];
         $timezone     = isset($ir['meta']['timezone'])
             ? $ir['meta']['timezone']
             : 'UTC';

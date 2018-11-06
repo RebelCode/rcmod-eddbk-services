@@ -198,50 +198,60 @@ class ServicesEntityManagerTest extends TestCase
             'image_id'         => 15,
             'bookings_enabled' => true,
             'timezone'         => 'Europe/Paris',
-            'session_lengths'  => [
+            'session_types'    => [
                 [
-                    'length' => 1800,
-                    'price'  => 15.00,
+                    'label' => 'Half Hour',
+                    'type'  => 'fixed_duration',
+                    'data'  => [
+                        'duration' => 1800,
+                        'price'    => 15.00,
+                    ],
                 ],
                 [
-                    'length' => 3600,
-                    'price'  => 25.00,
+                    'label' => 'Half Hour',
+                    'type'  => 'fixed_duration',
+                    'data'  => [
+                        'duration' => 3600,
+                        'price'    => 25.00,
+                    ],
                 ],
             ],
             'displayOptions'   => [
                 'allowClientChangeTimezone' => true,
             ],
             'availability'     => [
-                $rule1 = [
-                    'id'                => 82,
-                    'isAllDay'          => false,
-                    'start'             => '2018-10-10T10:00:00+02:00',
-                    'end'               => '2018-10-10T18:00:00+02:00',
-                    'repeat'            => true,
-                    'repeatUnit'        => 'day',
-                    'repeatPeriod'      => 1,
-                    'repeatUntil'       => 'period',
-                    'repeatUntilPeriod' => 5,
-                    'repeatUntilDate'   => 0,
-                    'repeatWeeklyOn'    => [],
-                    'repeatMonthlyOn'   => [],
-                    'excludeDates'      => [
-                        '2018-10-12T00:00:00+02:00',
+                'rules' => [
+                    $rule1 = [
+                        'id'                => 82,
+                        'isAllDay'          => false,
+                        'start'             => '2018-10-10T10:00:00+02:00',
+                        'end'               => '2018-10-10T18:00:00+02:00',
+                        'repeat'            => true,
+                        'repeatUnit'        => 'day',
+                        'repeatPeriod'      => 1,
+                        'repeatUntil'       => 'period',
+                        'repeatUntilPeriod' => 5,
+                        'repeatUntilDate'   => 0,
+                        'repeatWeeklyOn'    => [],
+                        'repeatMonthlyOn'   => [],
+                        'excludeDates'      => [
+                            '2018-10-12T00:00:00+02:00',
+                        ],
                     ],
-                ],
-                $rule2 = [
-                    'isAllDay'          => false,
-                    'start'             => '2018-10-11T18:00:00+02:00',
-                    'end'               => '2018-10-11T20:00:00+02:00',
-                    'repeat'            => false,
-                    'repeatUnit'        => 'day',
-                    'repeatPeriod'      => 1,
-                    'repeatUntil'       => 'period',
-                    'repeatUntilPeriod' => 0,
-                    'repeatUntilDate'   => 0,
-                    'repeatWeeklyOn'    => [],
-                    'repeatMonthlyOn'   => [],
-                    'excludeDates'      => [],
+                    $rule2 = [
+                        'isAllDay'          => false,
+                        'start'             => '2018-10-11T18:00:00+02:00',
+                        'end'               => '2018-10-11T20:00:00+02:00',
+                        'repeat'            => false,
+                        'repeatUnit'        => 'day',
+                        'repeatPeriod'      => 1,
+                        'repeatUntil'       => 'period',
+                        'repeatUntilPeriod' => 0,
+                        'repeatUntilDate'   => 0,
+                        'repeatWeeklyOn'    => [],
+                        'repeatMonthlyOn'   => [],
+                        'excludeDates'      => [],
+                    ],
                 ],
             ],
         ];
@@ -259,14 +269,22 @@ class ServicesEntityManagerTest extends TestCase
                         'meta_input'   => [
                             'eddbk_bookings_enabled' => true,
                             'eddbk_timezone'         => 'Europe/Paris',
-                            'eddbk_session_lengths'  => [
+                            'eddbk_session_types'    => [
                                 [
-                                    'length' => 1800,
-                                    'price'  => 15.00,
+                                    'label' => 'Half Hour',
+                                    'type'  => 'fixed_duration',
+                                    'data'  => [
+                                        'duration' => 1800,
+                                        'price'    => 15.00,
+                                    ],
                                 ],
                                 [
-                                    'length' => 3600,
-                                    'price'  => 25.00,
+                                    'label' => 'Half Hour',
+                                    'type'  => 'fixed_duration',
+                                    'data'  => [
+                                        'duration' => 3600,
+                                        'price'    => 25.00,
+                                    ],
                                 ],
                             ],
                             'eddbk_displayOptions'   => [
@@ -338,7 +356,7 @@ class ServicesEntityManagerTest extends TestCase
                     $expected = [
                         'post_title'     => 'Test Service',
                         'post_type'      => 'download',
-                        'post_status'    => 'publish',
+                        'post_status'    => ['publish', 'private', 'protected', 'draft', 'trash', 'pending', 'future'],
                         'posts_per_page' => 5,
                         'offset'         => 1,
                         'orderby'        => 'post_title',
@@ -366,6 +384,7 @@ class ServicesEntityManagerTest extends TestCase
                     'ID'           => 112,
                     'post_title'   => 'Test Service',
                     'post_excerpt' => 'A test service',
+                    'post_status'  => 'publish',
                 ],
             ],
         ]);
@@ -375,11 +394,19 @@ class ServicesEntityManagerTest extends TestCase
             'args'   => [
                 112,
             ],
+            'return' => 'test_url',
+        ]);
+
+        WP_Mock::wpFunction('get_post_thumbnail_id', [
+            'times'  => 1,
+            'args'   => [
+                112,
+            ],
             'return' => 68,
         ]);
 
         WP_Mock::wpFunction('get_post_meta', [
-            'times'  => '4-', // 4 or more times (four meta keys are known at the time of writing this test)
+            'times'  => '5+', // 5 or more times (five meta keys are known at the time of writing this test)
             'args'   => [112, Functions::type('string'), true],
             'return' => 'test_meta',
         ]);
@@ -399,11 +426,14 @@ class ServicesEntityManagerTest extends TestCase
                 'id'               => 112,
                 'name'             => 'Test Service',
                 'description'      => 'A test service',
+                'status'           => 'publish',
                 'bookings_enabled' => 'test_meta',
                 'timezone'         => 'test_meta',
                 'display_options'  => 'test_meta',
-                'session_lengths'  => 'test_meta',
-                'image_url'        => 68,
+                'session_types'    => 'test_meta',
+                'color'            => 'test_meta',
+                'image_url'        => 'test_url',
+                'image_id'         => 68,
                 'availability'     => $rules,
             ],
         ];
@@ -434,7 +464,7 @@ class ServicesEntityManagerTest extends TestCase
                 function ($arg) {
                     $expected = [
                         'post_type'      => 'download',
-                        'post_status'    => 'publish',
+                        'post_status'    => ['publish', 'private', 'protected', 'draft', 'trash', 'pending', 'future'],
                         'posts_per_page' => -1,
                         'meta_query'     => [
                             'relation'         => 'AND',
@@ -455,6 +485,7 @@ class ServicesEntityManagerTest extends TestCase
                     'ID'           => 112,
                     'post_title'   => 'Test Service',
                     'post_excerpt' => 'A test service',
+                    'post_status'  => 'publish',
                 ],
             ],
         ]);
@@ -464,11 +495,19 @@ class ServicesEntityManagerTest extends TestCase
             'args'   => [
                 112,
             ],
+            'return' => 'test_url',
+        ]);
+
+        WP_Mock::wpFunction('get_post_thumbnail_id', [
+            'times'  => 1,
+            'args'   => [
+                112,
+            ],
             'return' => 68,
         ]);
 
         WP_Mock::wpFunction('get_post_meta', [
-            'times'  => '4-', // 4 or more times (four meta keys are known at the time of writing this test)
+            'times'  => '5+', // 5 or more times (five meta keys are known at the time of writing this test)
             'args'   => [112, Functions::type('string'), true],
             'return' => 'test_meta',
         ]);
@@ -488,11 +527,14 @@ class ServicesEntityManagerTest extends TestCase
                 'id'               => 112,
                 'name'             => 'Test Service',
                 'description'      => 'A test service',
+                'status'           => 'publish',
                 'bookings_enabled' => 'test_meta',
                 'timezone'         => 'test_meta',
                 'display_options'  => 'test_meta',
-                'session_lengths'  => 'test_meta',
-                'image_url'        => 68,
+                'session_types'    => 'test_meta',
+                'color'            => 'test_meta',
+                'image_url'        => 'test_url',
+                'image_id'         => 68,
                 'availability'     => $rules,
             ],
         ];
@@ -524,9 +566,9 @@ class ServicesEntityManagerTest extends TestCase
             'args'   => [
                 function ($arg) use ($id) {
                     $expected = [
-                        'post__in'       => [$id],
+                        'p'              => $id,
                         'post_type'      => 'download',
-                        'post_status'    => 'any',
+                        'post_status'    => ['publish', 'private', 'protected', 'draft', 'trash', 'pending', 'future'],
                         'posts_per_page' => 1,
                         'meta_query'     => [
                             'relation'         => 'AND',
@@ -547,6 +589,7 @@ class ServicesEntityManagerTest extends TestCase
                     'ID'           => $id,
                     'post_title'   => 'Test Service',
                     'post_excerpt' => 'A test service',
+                    'post_status'  => 'publish',
                 ],
             ],
         ]);
@@ -556,11 +599,19 @@ class ServicesEntityManagerTest extends TestCase
             'args'   => [
                 $id,
             ],
+            'return' => 'test_url',
+        ]);
+
+        WP_Mock::wpFunction('get_post_thumbnail_id', [
+            'times'  => 1,
+            'args'   => [
+                $id,
+            ],
             'return' => 68,
         ]);
 
         WP_Mock::wpFunction('get_post_meta', [
-            'times'  => '4-', // 4 or more times (four meta keys are known at the time of writing this test)
+            'times'  => '5+', // 5 or more times (five meta keys are known at the time of writing this test)
             'args'   => [$id, Functions::type('string'), true],
             'return' => 'test_meta',
         ]);
@@ -579,11 +630,14 @@ class ServicesEntityManagerTest extends TestCase
             'id'               => $id,
             'name'             => 'Test Service',
             'description'      => 'A test service',
+            'status'           => 'publish',
             'bookings_enabled' => 'test_meta',
             'timezone'         => 'test_meta',
             'display_options'  => 'test_meta',
-            'session_lengths'  => 'test_meta',
-            'image_url'        => 68,
+            'session_types'    => 'test_meta',
+            'color'            => 'test_meta',
+            'image_url'        => 'test_url',
+            'image_id'         => 68,
             'availability'     => $rules,
         ];
 
@@ -614,9 +668,9 @@ class ServicesEntityManagerTest extends TestCase
             'args'   => [
                 function ($arg) use ($id) {
                     $expected = [
-                        'post__in'       => [$id],
+                        'p'              => $id,
                         'post_type'      => 'download',
-                        'post_status'    => 'any',
+                        'post_status'    => ['publish', 'private', 'protected', 'draft', 'trash', 'pending', 'future'],
                         'posts_per_page' => 1,
                         'meta_query'     => [
                             'relation'         => 'AND',
@@ -637,6 +691,7 @@ class ServicesEntityManagerTest extends TestCase
                     'ID'           => $id,
                     'post_title'   => 'Test Service',
                     'post_excerpt' => 'A test service',
+                    'post_status'  => 'publish',
                 ],
             ],
         ]);
@@ -646,11 +701,19 @@ class ServicesEntityManagerTest extends TestCase
             'args'   => [
                 $id,
             ],
+            'return' => 'test_url',
+        ]);
+
+        WP_Mock::wpFunction('get_post_thumbnail_id', [
+            'times'  => 1,
+            'args'   => [
+                $id,
+            ],
             'return' => 68,
         ]);
 
         WP_Mock::wpFunction('get_post_meta', [
-            'times'  => '4-', // 4 or more times (four meta keys are known at the time of writing this test)
+            'times'  => '5+', // 5 or more times (five meta keys are known at the time of writing this test)
             'args'   => [$id, Functions::type('string'), true],
             'return' => 'test_meta',
         ]);
@@ -693,9 +756,9 @@ class ServicesEntityManagerTest extends TestCase
             'args'   => [
                 function ($arg) use ($id) {
                     $expected = [
-                        'post__in'       => [$id],
+                        'p'              => $id,
                         'post_type'      => 'download',
-                        'post_status'    => 'any',
+                        'post_status'    => ['publish', 'private', 'protected', 'draft', 'trash', 'pending', 'future'],
                         'posts_per_page' => 1,
                         'meta_query'     => [
                             'relation'         => 'AND',
@@ -715,6 +778,10 @@ class ServicesEntityManagerTest extends TestCase
         ]);
 
         WP_Mock::wpFunction('get_the_post_thumbnail_url', [
+            'times' => 0,
+        ]);
+
+        WP_Mock::wpFunction('get_post_thumbnail_id', [
             'times' => 0,
         ]);
 
@@ -749,16 +816,17 @@ class ServicesEntityManagerTest extends TestCase
         WP_Mock::wpFunction('wp_update_post', [
             'times' => 1,
             'args'  => [
-                $serviceId,
-                function ($arg) {
+                function ($arg) use ($serviceId) {
                     $expected = [
+                        'ID'         => $serviceId,
+                        'post_type'  => 'download',
                         'post_title' => 'New name',
                         'meta_input' => [
                             'eddbk_bookings_enabled' => false,
                         ],
                     ];
 
-                    $this->assertEquals($arg, $expected);
+                    $this->assertEquals($expected, $arg);
 
                     return true;
                 },
