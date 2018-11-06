@@ -2,7 +2,13 @@
 
 namespace RebelCode\EddBookings\Services\Module;
 
+use Dhii\Data\Container\ContainerGetCapableTrait;
+use Dhii\Data\Container\ContainerHasCapableTrait;
+use Dhii\Data\Container\CreateContainerExceptionCapableTrait;
+use Dhii\Data\Container\CreateNotFoundExceptionCapableTrait;
+use Dhii\Data\Container\NormalizeKeyCapableTrait;
 use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
+use Dhii\Exception\CreateOutOfRangeExceptionCapableTrait;
 use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Invocation\InvocableInterface;
 use Dhii\Util\Normalization\NormalizeIntCapableTrait;
@@ -21,13 +27,31 @@ use wpdb;
 class SessionTypesMigrationHandler implements InvocableInterface
 {
     /* @since [*next-version*] */
+    use ContainerGetCapableTrait;
+
+    /* @since [*next-version*] */
+    use ContainerHasCapableTrait;
+
+    /* @since [*next-version*] */
     use NormalizeIntCapableTrait;
+
+    /* @since [*next-version*] */
+    use NormalizeKeyCapableTrait;
 
     /* @since [*next-version*] */
     use NormalizeStringCapableTrait;
 
     /* @since [*next-version*] */
+    use CreateContainerExceptionCapableTrait;
+
+    /* @since [*next-version*] */
+    use CreateNotFoundExceptionCapableTrait;
+
+    /* @since [*next-version*] */
     use CreateInvalidArgumentExceptionCapableTrait;
+
+    /* @since [*next-version*] */
+    use CreateOutOfRangeExceptionCapableTrait;
 
     /* @since [*next-version*] */
     use StringTranslatingTrait;
@@ -148,17 +172,17 @@ class SessionTypesMigrationHandler implements InvocableInterface
     protected function _convertSessionTypeMeta($meta)
     {
         // Detect lack of old key or presence of new key, to stop conversion if the meta is already up-to-date
-        if (!isset($meta['sessionLength']) || isset($meta['type'])) {
+        if (!$this->_containerHas($meta, 'sessionLength') || $this->_containerHas($meta, 'type')) {
             return $meta;
         }
 
         return [
             'id'    => null,
             'label' => '',
-            'price' => $meta['price'],
+            'price' => $this->_containerGet($meta, 'price'),
             'type'  => 'fixed_duration',
             'data'  => [
-                'duration' => $meta['sessionLength'],
+                'duration' => $this->_containerGet($meta, 'sessionLength'),
             ],
         ];
     }
