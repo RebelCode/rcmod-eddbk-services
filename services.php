@@ -103,6 +103,8 @@ class EddBkServicesServiceList extends ArrayObject
             'eddbk_admin_delete_service_handler'               => function (ContainerInterface $c) {
                 return new AdminDeleteServiceHandler(
                     $c->get('eddbk_services/post_type'),
+                    $c->get('eddbk_services/meta_prefix'),
+                    $c->get('resources_delete_rm'),
                     $c->get('sessions_delete_rm'),
                     $c->get('session_rules_delete_rm'),
                     $c->get('sql_expression_builder')

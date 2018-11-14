@@ -63,22 +63,46 @@ class AdminDeleteServiceHandler implements InvocableInterface
     protected $postType;
 
     /**
+     * The services post meta prefix.
+     *
+     * @since [*next-version*]
+     *
+     * @var string|Stringable
+     */
+    protected $metaPrefix;
+
+    /**
+     * The resources DELETE resource model.
+     *
+     * @since [*next-version*]
+     *
+     * @var DeleteCapableInterface
+     */
+    protected $resourcesDeleteRm;
+
+    /**
      * Constructor.
      *
      * @since [*next-version*]
      *
      * @param string|Stringable      $postType             The slug of the services post type.
+     * @param string|Stringable      $metaPrefix           The services post meta prefix.
+     * @param DeleteCapableInterface $resourcesDeleteRm    The resources DELETE resource model.
      * @param DeleteCapableInterface $sessionsDeleteRm     The sessions DELETE resource model.
      * @param DeleteCapableInterface $sessionRulesDeleteRm The session rules DELETE resource model.
      * @param object                 $exprBuilder          The expression builder.
      */
     public function __construct(
         $postType,
+        $metaPrefix,
+        DeleteCapableInterface $resourcesDeleteRm,
         DeleteCapableInterface $sessionsDeleteRm,
         DeleteCapableInterface $sessionRulesDeleteRm,
         $exprBuilder
     ) {
         $this->postType             = $this->_normalizeString($postType);
+        $this->metaPrefix           = $this->_normalizeString($metaPrefix);
+        $this->resourcesDeleteRm    = $resourcesDeleteRm;
         $this->sessionsDeleteRm     = $sessionsDeleteRm;
         $this->sessionRulesDeleteRm = $sessionRulesDeleteRm;
         $this->exprBuilder          = $exprBuilder;
@@ -106,19 +130,48 @@ class AdminDeleteServiceHandler implements InvocableInterface
         if ($postType === $this->postType) {
             $b = $this->exprBuilder;
 
+            $scheduleId = $this->_getPostMeta($postId, $this->metaPrefix . 'schedule_id', $postId);
+
+            $this->resourcesDeleteRm->delete(
+                $b->eq(
+                    $b->var('id'),
+                    $b->lit($scheduleId)
+                )
+            );
+
             $this->sessionsDeleteRm->delete(
                 $b->eq(
-                    $b->var('service_id'),
-                    $b->lit($postId)
+                    $b->var('resource_id'),
+                    $b->lit($scheduleId)
                 )
             );
             $this->sessionRulesDeleteRm->delete(
                 $b->eq(
-                    $b->var('service_id'),
-                    $b->lit($postId)
+                    $b->var('resource_id'),
+                    $b->lit($scheduleId)
                 )
             );
         }
+    }
+
+    /**
+     * Retrieves meta data for a WordPress post.
+     *
+     * @since [*next-version*]
+     *
+     * @param int|string $id      The ID of the service.
+     * @param string     $metaKey The meta key.
+     * @param mixed      $default The default value to return.
+     *
+     * @return mixed The meta value.
+     */
+    protected function _getPostMeta($id, $metaKey, $default = '')
+    {
+        $metaValue = \get_post_meta($id, $metaKey, true);
+
+        return ($metaValue === '')
+            ? $default
+            : $metaValue;
     }
 
     /**
