@@ -207,9 +207,6 @@ class ServicesEntityManager implements EntityManagerInterface
         $ir   = $this->_entityToServiceIr($entity);
         $post = $this->_serviceIrToPost($ir);
 
-        // Ensure the post type is correct
-        $post['post_type'] = $this->postType;
-
         $id = $this->_wpInsertPost($post);
         $this->_updateServiceExternals($id, $ir);
 
@@ -498,6 +495,9 @@ class ServicesEntityManager implements EntityManagerInterface
         foreach ($ir['meta'] as $_key => $_value) {
             $post['meta_input'][$this->metaPrefix . $_key] = $_value;
         }
+
+        // Ensure the post type is correct
+        $post['post_type'] = $this->postType;
 
         return $post;
     }
