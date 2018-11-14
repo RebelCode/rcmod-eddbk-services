@@ -513,7 +513,7 @@ class ServicesEntityManager implements EntityManagerInterface
      */
     protected function _normalizeSessionTypes(array $sessionTypes)
     {
-        $hashed = array_map(function($st) {
+        $hashed = array_map(function ($st) {
             $st['id'] = md5(json_encode($st));
 
             return $st;
@@ -567,7 +567,7 @@ class ServicesEntityManager implements EntityManagerInterface
         $b = $this->exprBuilder;
 
         // Get schedule with this ID
-        $schedules  = $this->resourcesSelectRm->select($b->eq(
+        $schedules = $this->resourcesSelectRm->select($b->eq(
             $b->var('id', $scheduleId)
         ));
 
