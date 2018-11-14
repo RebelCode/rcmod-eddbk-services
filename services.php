@@ -85,6 +85,8 @@ class EddBkServicesServiceList extends ArrayObject
                 return new ServicesEntityManager(
                     $c->get('eddbk_services/post_type'),
                     $c->get('eddbk_services/meta_prefix'),
+                    $c->get('resources_select_rm'),
+                    $c->get('resources_insert_rm'),
                     $c->get('session_rules_select_rm'),
                     $c->get('session_rules_insert_rm'),
                     $c->get('session_rules_update_rm'),
