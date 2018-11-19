@@ -5,7 +5,6 @@ use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Iterator\NormalizeIteratorCapableTrait;
 use Dhii\Util\Normalization\NormalizeArrayCapableTrait;
 use Psr\Container\ContainerInterface;
-use RebelCode\EddBookings\Services\Module\AdminBookingsUiServicesHandler;
 use RebelCode\EddBookings\Services\Module\AdminDeleteServiceHandler;
 use RebelCode\EddBookings\Services\Module\GetServiceHasPriceOptionsHandler;
 use RebelCode\EddBookings\Services\Module\GetServicePriceHandler;
@@ -14,8 +13,6 @@ use RebelCode\EddBookings\Services\Module\HideServicesFromDownloadsHandler;
 use RebelCode\EddBookings\Services\Module\SessionTypesMigrationHandler;
 use RebelCode\EddBookings\Services\Storage\ServicesEntityManager;
 use RebelCode\Transformers\CallbackTransformer;
-use RebelCode\Transformers\MapTransformer;
-use RebelCode\Transformers\TransformerIterator;
 
 /**
  * The service list for the EDD Bookings Services module.
