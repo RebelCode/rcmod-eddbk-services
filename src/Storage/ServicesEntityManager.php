@@ -98,22 +98,13 @@ class ServicesEntityManager implements EntityManagerInterface
     protected $metaPrefix;
 
     /**
-     * The resources select resource model.
+     * The resources entity manager.
      *
      * @since [*next-version*]
      *
-     * @var SelectCapableInterface
+     * @var EntityManagerInterface
      */
-    protected $resourcesSelectRm;
-
-    /**
-     * The resources insert resource model.
-     *
-     * @since [*next-version*]
-     *
-     * @var InsertCapableInterface
-     */
-    protected $resourcesInsertRm;
+    protected $resourcesManager;
 
     /**
      * The availability rules select resource model.
@@ -165,36 +156,33 @@ class ServicesEntityManager implements EntityManagerInterface
      *
      * @since [*next-version*]
      *
-     * @param string|Stringable      $postType          The services post type.
-     * @param string|Stringable      $metaPrefix        The prefix for post meta keys.
-     * @param SelectCapableInterface $resourcesSelectRm The SELECT resource model for resources.
-     * @param InsertCapableInterface $resourcesInsertRm The INSERT resource model for resources.
-     * @param SelectCapableInterface $rulesSelectRm     The SELECT resource model for availability rules.
-     * @param InsertCapableInterface $rulesInsertRm     The INSERT resource model for availability rules.
-     * @param UpdateCapableInterface $rulesUpdateRm     The UPDATE resource model for availability rules.
-     * @param DeleteCapableInterface $rulesDeleteRm     The DELETE resource model for availability rules.
-     * @param object                 $exprBuilder       The expression builder instances for creating query conditions.
+     * @param string|Stringable      $postType         The services post type.
+     * @param string|Stringable      $metaPrefix       The prefix for post meta keys.
+     * @param EntityManagerInterface $resourcesManager The resources entity manager.
+     * @param SelectCapableInterface $rulesSelectRm    The SELECT resource model for availability rules.
+     * @param InsertCapableInterface $rulesInsertRm    The INSERT resource model for availability rules.
+     * @param UpdateCapableInterface $rulesUpdateRm    The UPDATE resource model for availability rules.
+     * @param DeleteCapableInterface $rulesDeleteRm    The DELETE resource model for availability rules.
+     * @param object                 $exprBuilder      The expression builder instances for creating query conditions.
      */
     public function __construct(
         $postType,
         $metaPrefix,
-        SelectCapableInterface $resourcesSelectRm,
-        InsertCapableInterface $resourcesInsertRm,
+        EntityManagerInterface $resourcesManager,
         SelectCapableInterface $rulesSelectRm,
         InsertCapableInterface $rulesInsertRm,
         UpdateCapableInterface $rulesUpdateRm,
         DeleteCapableInterface $rulesDeleteRm,
         $exprBuilder
     ) {
-        $this->postType          = $postType;
-        $this->metaPrefix        = $metaPrefix;
-        $this->resourcesSelectRm = $resourcesSelectRm;
-        $this->resourcesInsertRm = $resourcesInsertRm;
-        $this->rulesSelectRm     = $rulesSelectRm;
-        $this->rulesInsertRm     = $rulesInsertRm;
-        $this->rulesUpdateRm     = $rulesUpdateRm;
-        $this->rulesDeleteRm     = $rulesDeleteRm;
-        $this->exprBuilder       = $exprBuilder;
+        $this->postType         = $postType;
+        $this->metaPrefix       = $metaPrefix;
+        $this->resourcesManager = $resourcesManager;
+        $this->rulesSelectRm    = $rulesSelectRm;
+        $this->rulesInsertRm    = $rulesInsertRm;
+        $this->rulesUpdateRm    = $rulesUpdateRm;
+        $this->rulesDeleteRm    = $rulesDeleteRm;
+        $this->exprBuilder      = $exprBuilder;
     }
 
     /**
@@ -391,15 +379,10 @@ class ServicesEntityManager implements EntityManagerInterface
      */
     protected function _postToService($post)
     {
-        $b = $this->exprBuilder;
-
         $scheduleId   = $this->_getPostMeta($post->ID, $this->metaPrefix . 'schedule_id', $post->ID);
-        $sessionRules = $this->rulesSelectRm->select(
-            $b->eq(
-                $b->ef('session_rule', 'resource_id'),
-                $b->lit($scheduleId)
-            )
-        );
+        $schedule     = $this->resourcesManager->get($scheduleId);
+        $availability = $this->_containerGet($schedule, 'availability');
+        $timezone     = $this->_containerGet($schedule, 'timezone');
 
         $sessionTypes = $this->_getPostMeta($post->ID, $this->metaPrefix . 'session_types', []);
         $sessionTypes = $this->_normalizeSessionTypes($sessionTypes);
@@ -416,8 +399,8 @@ class ServicesEntityManager implements EntityManagerInterface
             'session_types'    => $sessionTypes,
             'display_options'  => $this->_getPostMeta($post->ID, $this->metaPrefix . 'display_options', []),
             'color'            => $this->_getPostMeta($post->ID, $this->metaPrefix . 'color', null),
-            'timezone'         => $this->_getPostMeta($post->ID, $this->metaPrefix . 'timezone', 'UTC'),
-            'availability'     => $sessionRules,
+            'timezone'         => $timezone,
+            'availability'     => $availability,
         ];
 
         return $service;
@@ -543,10 +526,6 @@ class ServicesEntityManager implements EntityManagerInterface
                 $this->_wpSetPostThumbnail($id, $imageId);
             }
         }
-
-        if (isset($ir['availability'])) {
-            $this->_updateAvailability($id, $ir);
-        }
     }
 
     /**
@@ -564,24 +543,26 @@ class ServicesEntityManager implements EntityManagerInterface
             ? $ir['schedule_id']
             : $id;
 
-        $b = $this->exprBuilder;
-
-        // Get schedule with this ID
-        $schedules = $this->resourcesSelectRm->select($b->eq(
-            $b->var('id', $scheduleId)
-        ));
-
         // If it does not exist, create it and update the post meta
-        if (count($schedules) === 0 || !reset($schedule)) {
-            $schedule = [
+        if (!$this->resourcesManager->has($scheduleId)) {
+            $scheduleId = $this->resourcesManager->add([
                 'type' => 'schedule',
                 'name' => sprintf('Schedule for "%s"', $ir['post']['post_title']),
-            ];
-
-            $scheduleIds = $this->resourcesInsertRm->insert([$schedule]);
-            $scheduleId  = reset($scheduleIds);
+            ]);
 
             $this->_updatePostMeta($id, $this->metaPrefix . 'schedule_id', $scheduleId);
+        }
+
+        // Update schedule availability, using the "service availability" in the IR
+        if (isset($ir['availability'])) {
+            $availability = $ir['availability'];
+            $changeSet    = ['availability' => $availability];
+
+            if (isset($ir['timezone'])) {
+                $changeSet['timezone'] = $ir['timezone'];
+            }
+
+            $this->resourcesManager->update($scheduleId, $changeSet);
         }
     }
 
