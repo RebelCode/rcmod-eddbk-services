@@ -192,11 +192,11 @@ class EddBkServicesServiceList extends ArrayObject
             },
 
             /*
-             * The migration handler for when the database is upgraded to version 3.
+             * The migration handler updating service session types when the database is upgraded to version 3.
              *
              * @since [*next-version*]
              */
-            'eddbk_services_migration_3_handler' => function (ContainerInterface $c) {
+            'eddbk_services_session_types_migration_3_handler' => function (ContainerInterface $c) {
                 return new SessionTypesMigrationHandler(
                     $c->get('wpdb'),
                     $c->get('eddbk_services/post_type'),
