@@ -829,9 +829,9 @@ class ServicesEntityManager implements EntityManagerInterface
      *
      * @since [*next-version*]
      *
-     * @param int|string|Stringable      $id    The ID of the post to update.
-     * @param string|Stringable          $key   The meta key.
-     * @param array|stdClass|Traversable $value The meta value.
+     * @param int|string|Stringable $id    The ID of the post to update.
+     * @param string|Stringable     $key   The meta key.
+     * @param mixed                 $value The meta value.
      */
     protected function _updatePostMeta($id, $key, $value)
     {
