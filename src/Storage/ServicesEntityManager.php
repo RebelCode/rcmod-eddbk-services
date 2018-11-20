@@ -382,7 +382,7 @@ class ServicesEntityManager implements EntityManagerInterface
         $scheduleId   = $this->_getPostMeta($post->ID, $this->metaPrefix . 'schedule_id', $post->ID);
         $schedule     = $this->resourcesManager->get($scheduleId);
         $availability = $this->_containerGet($schedule, 'availability');
-        $timezone     = $this->_containerGet($schedule, 'timezone');
+        $timezone     = $this->_containerGet($availability, 'timezone');
 
         $sessionTypes = $this->_getPostMeta($post->ID, $this->metaPrefix . 'session_types', []);
         $sessionTypes = $this->_normalizeSessionTypes($sessionTypes);
