@@ -558,8 +558,8 @@ class ServicesEntityManager implements EntityManagerInterface
             $availability = $ir['availability'];
             $changeSet    = ['availability' => $availability];
 
-            if (isset($ir['timezone'])) {
-                $changeSet['timezone'] = $ir['timezone'];
+            if (isset($ir['meta']['timezone'])) {
+                $changeSet['timezone'] = $ir['meta']['timezone'];
             }
 
             $this->resourcesManager->update($scheduleId, $changeSet);
