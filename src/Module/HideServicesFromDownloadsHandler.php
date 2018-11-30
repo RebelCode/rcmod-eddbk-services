@@ -72,10 +72,14 @@ class HideServicesFromDownloadsHandler implements InvocableInterface
             );
         }
 
-        $query  = $event->getParam(0);
-        $screen = get_current_screen();
+        if (!is_admin() || !function_exists('get_current_screen')) {
+            return;
+        }
 
-        if (!is_admin() || $screen->post_type !== $this->postType || $screen->id !== 'edit-download') {
+        $screen = get_current_screen();
+        $query  = $event->getParam(0);
+
+        if ($screen->post_type !== $this->postType || $screen->id !== 'edit-download' || $query === null) {
             return;
         }
 
