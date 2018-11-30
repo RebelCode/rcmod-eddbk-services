@@ -64,8 +64,6 @@ class HideServicesFromDownloadsHandler implements InvocableInterface
      */
     public function __invoke()
     {
-        global $pagenow;
-
         $event = func_get_arg(0);
 
         if (!($event instanceof EventInterface)) {
@@ -74,10 +72,10 @@ class HideServicesFromDownloadsHandler implements InvocableInterface
             );
         }
 
-        $query    = $event->getParam(0);
-        $postType = filter_input(INPUT_GET, 'post_type', FILTER_SANITIZE_STRING);
+        $query  = $event->getParam(0);
+        $screen = get_current_screen();
 
-        if (!is_admin() || $pagenow !== 'edit.php' || $postType !== $this->postType) {
+        if (!is_admin() || $screen->post_type !== $this->postType || $screen->id !== 'edit-download') {
             return;
         }
 
