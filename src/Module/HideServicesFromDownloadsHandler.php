@@ -83,6 +83,11 @@ class HideServicesFromDownloadsHandler implements InvocableInterface
             return;
         }
 
+        // Ignore queries originate from the services manager
+        if (isset($query->query_vars['meta_query']['bookings_enabled'])) {
+            return;
+        }
+
         $query->query_vars['meta_key']     = $this->metaPrefix . 'bookings_enabled';
         $query->query_vars['meta_value']   = '1';
         $query->query_vars['meta_compare'] = '!=';
