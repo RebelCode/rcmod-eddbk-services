@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - The download-hiding query was affecting other pages, such as the Payment History and Customer pages.
+- The status counts on the Download page were including services.
 
 ## [0.1-alpha12] - 2018-10-30
 ### Added
