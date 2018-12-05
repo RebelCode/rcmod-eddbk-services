@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
 ### Changed
-- Renamed `session_lengths` to `session_types`.
+- Replaced `session_lengths` with `session_types`.
 - Session type labels are used as price names, if they are given.
 
 ### Fixed

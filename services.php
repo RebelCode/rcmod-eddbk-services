@@ -5,7 +5,6 @@ use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Iterator\NormalizeIteratorCapableTrait;
 use Dhii\Util\Normalization\NormalizeArrayCapableTrait;
 use Psr\Container\ContainerInterface;
-use RebelCode\EddBookings\Services\Module\AdminBookingsUiServicesHandler;
 use RebelCode\EddBookings\Services\Module\AdminDeleteServiceHandler;
 use RebelCode\EddBookings\Services\Module\GetServiceHasPriceOptionsHandler;
 use RebelCode\EddBookings\Services\Module\GetServicePriceHandler;
@@ -14,8 +13,6 @@ use RebelCode\EddBookings\Services\Module\HideServicesFromDownloadsHandler;
 use RebelCode\EddBookings\Services\Module\SessionTypesMigrationHandler;
 use RebelCode\EddBookings\Services\Storage\ServicesEntityManager;
 use RebelCode\Transformers\CallbackTransformer;
-use RebelCode\Transformers\MapTransformer;
-use RebelCode\Transformers\TransformerIterator;
 
 /**
  * The service list for the EDD Bookings Services module.
@@ -85,6 +82,7 @@ class EddBkServicesServiceList extends ArrayObject
                 return new ServicesEntityManager(
                     $c->get('eddbk_services/post_type'),
                     $c->get('eddbk_services/meta_prefix'),
+                    $c->get('resources_entity_manager'),
                     $c->get('session_rules_select_rm'),
                     $c->get('session_rules_insert_rm'),
                     $c->get('session_rules_update_rm'),
@@ -101,6 +99,8 @@ class EddBkServicesServiceList extends ArrayObject
             'eddbk_admin_delete_service_handler'               => function (ContainerInterface $c) {
                 return new AdminDeleteServiceHandler(
                     $c->get('eddbk_services/post_type'),
+                    $c->get('eddbk_services/meta_prefix'),
+                    $c->get('resources_delete_rm'),
                     $c->get('sessions_delete_rm'),
                     $c->get('session_rules_delete_rm'),
                     $c->get('sql_expression_builder')
@@ -188,11 +188,11 @@ class EddBkServicesServiceList extends ArrayObject
             },
 
             /*
-             * The migration handler for when the database is upgraded to version 3.
+             * The migration handler updating service session types when the database is upgraded to version 3.
              *
              * @since [*next-version*]
              */
-            'eddbk_services_migration_3_handler' => function (ContainerInterface $c) {
+            'eddbk_services_session_types_migration_3_handler' => function (ContainerInterface $c) {
                 return new SessionTypesMigrationHandler(
                     $c->get('wpdb'),
                     $c->get('eddbk_services/post_type'),

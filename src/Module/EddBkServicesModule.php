@@ -122,6 +122,6 @@ class EddBkServicesModule extends AbstractBaseModule
     protected function _attachMigrationHandlers(ContainerInterface $c)
     {
         // Event for after migrating to DB version 3 (changes session lengths to session types)
-        $this->_attach('wp_bookings_cqrs_after_up_migration_to_3', $c->get('eddbk_services_migration_3_handler'));
+        $this->_attach('wp_bookings_cqrs_after_up_migration_to_3', $c->get('eddbk_services_session_types_migration_3_handler'));
     }
 }

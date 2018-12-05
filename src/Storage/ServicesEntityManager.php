@@ -98,6 +98,15 @@ class ServicesEntityManager implements EntityManagerInterface
     protected $metaPrefix;
 
     /**
+     * The resources entity manager.
+     *
+     * @since [*next-version*]
+     *
+     * @var EntityManagerInterface
+     */
+    protected $resourcesManager;
+
+    /**
      * The availability rules select resource model.
      *
      * @since [*next-version*]
@@ -147,30 +156,33 @@ class ServicesEntityManager implements EntityManagerInterface
      *
      * @since [*next-version*]
      *
-     * @param string|Stringable      $postType      The services post type.
-     * @param string|Stringable      $metaPrefix    The prefix for post meta keys.
-     * @param SelectCapableInterface $rulesSelectRm The SELECT resource model for availability rules.
-     * @param InsertCapableInterface $rulesInsertRm The INSERT resource model for availability rules.
-     * @param UpdateCapableInterface $rulesUpdateRm The UPDATE resource model for availability rules.
-     * @param DeleteCapableInterface $rulesDeleteRm The DELETE resource model for availability rules.
-     * @param object                 $exprBuilder   The expression builder instances for creating query conditions.
+     * @param string|Stringable      $postType         The services post type.
+     * @param string|Stringable      $metaPrefix       The prefix for post meta keys.
+     * @param EntityManagerInterface $resourcesManager The resources entity manager.
+     * @param SelectCapableInterface $rulesSelectRm    The SELECT resource model for availability rules.
+     * @param InsertCapableInterface $rulesInsertRm    The INSERT resource model for availability rules.
+     * @param UpdateCapableInterface $rulesUpdateRm    The UPDATE resource model for availability rules.
+     * @param DeleteCapableInterface $rulesDeleteRm    The DELETE resource model for availability rules.
+     * @param object                 $exprBuilder      The expression builder instances for creating query conditions.
      */
     public function __construct(
         $postType,
         $metaPrefix,
+        EntityManagerInterface $resourcesManager,
         SelectCapableInterface $rulesSelectRm,
         InsertCapableInterface $rulesInsertRm,
         UpdateCapableInterface $rulesUpdateRm,
         DeleteCapableInterface $rulesDeleteRm,
         $exprBuilder
     ) {
-        $this->postType      = $postType;
-        $this->metaPrefix    = $metaPrefix;
-        $this->rulesSelectRm = $rulesSelectRm;
-        $this->rulesInsertRm = $rulesInsertRm;
-        $this->rulesUpdateRm = $rulesUpdateRm;
-        $this->rulesDeleteRm = $rulesDeleteRm;
-        $this->exprBuilder   = $exprBuilder;
+        $this->postType         = $postType;
+        $this->metaPrefix       = $metaPrefix;
+        $this->resourcesManager = $resourcesManager;
+        $this->rulesSelectRm    = $rulesSelectRm;
+        $this->rulesInsertRm    = $rulesInsertRm;
+        $this->rulesUpdateRm    = $rulesUpdateRm;
+        $this->rulesDeleteRm    = $rulesDeleteRm;
+        $this->exprBuilder      = $exprBuilder;
     }
 
     /**
@@ -182,9 +194,6 @@ class ServicesEntityManager implements EntityManagerInterface
     {
         $ir   = $this->_entityToServiceIr($entity);
         $post = $this->_serviceIrToPost($ir);
-
-        // Ensure the post type is correct
-        $post['post_type'] = $this->postType;
 
         $id = $this->_wpInsertPost($post);
         $this->_updateServiceExternals($id, $ir);
@@ -370,14 +379,10 @@ class ServicesEntityManager implements EntityManagerInterface
      */
     protected function _postToService($post)
     {
-        $b = $this->exprBuilder;
-
-        $sessionRules = $this->rulesSelectRm->select(
-            $b->eq(
-                $b->ef('session_rule', 'service_id'),
-                $b->lit($post->ID)
-            )
-        );
+        $scheduleId   = $this->_getPostMeta($post->ID, $this->metaPrefix . 'schedule_id', $post->ID);
+        $schedule     = $this->resourcesManager->get($scheduleId);
+        $availability = $this->_containerGet($schedule, 'availability');
+        $timezone     = $this->_containerGet($availability, 'timezone');
 
         $sessionTypes = $this->_getPostMeta($post->ID, $this->metaPrefix . 'session_types', []);
         $sessionTypes = $this->_normalizeSessionTypes($sessionTypes);
@@ -390,11 +395,12 @@ class ServicesEntityManager implements EntityManagerInterface
             'image_id'         => $this->_getPostImageId($post->ID),
             'image_url'        => $this->_getPostImageUrl($post->ID),
             'bookings_enabled' => $this->_getPostMeta($post->ID, $this->metaPrefix . 'bookings_enabled', false),
+            'schedule_id'      => $scheduleId,
             'session_types'    => $sessionTypes,
             'display_options'  => $this->_getPostMeta($post->ID, $this->metaPrefix . 'display_options', []),
             'color'            => $this->_getPostMeta($post->ID, $this->metaPrefix . 'color', null),
-            'timezone'         => $this->_getPostMeta($post->ID, $this->metaPrefix . 'timezone', 'UTC'),
-            'availability'     => $sessionRules,
+            'timezone'         => $timezone,
+            'availability'     => $availability,
         ];
 
         return $service;
@@ -423,6 +429,7 @@ class ServicesEntityManager implements EntityManagerInterface
             ],
             'availability' => null,
             'image_id'     => null,
+            'schedule_id'  => null,
         ];
 
         foreach ($eArray as $_key => $_value) {
@@ -436,9 +443,8 @@ class ServicesEntityManager implements EntityManagerInterface
                 continue;
             }
 
-            // If the key is for availability data or image ID
-            if ($_key === 'availability' || $_key === 'image_id') {
-                // Add to IR top level
+            // If the key is for availability data, image ID or schedule ID, add top level of IR
+            if ($_key === 'availability' || $_key === 'image_id' || $_key === 'schedule_id') {
                 $ir[$_key] = $eArray[$_key];
 
                 continue;
@@ -473,6 +479,9 @@ class ServicesEntityManager implements EntityManagerInterface
             $post['meta_input'][$this->metaPrefix . $_key] = $_value;
         }
 
+        // Ensure the post type is correct
+        $post['post_type'] = $this->postType;
+
         return $post;
     }
 
@@ -487,7 +496,7 @@ class ServicesEntityManager implements EntityManagerInterface
      */
     protected function _normalizeSessionTypes(array $sessionTypes)
     {
-        $hashed = array_map(function($st) {
+        $hashed = array_map(function ($st) {
             $st['id'] = md5(json_encode($st));
 
             return $st;
@@ -506,6 +515,8 @@ class ServicesEntityManager implements EntityManagerInterface
      */
     protected function _updateServiceExternals($id, $ir)
     {
+        $this->_updateSchedule($id, $ir);
+
         if (array_key_exists('image_id', $ir)) {
             $imageId = $ir['image_id'];
 
@@ -515,9 +526,43 @@ class ServicesEntityManager implements EntityManagerInterface
                 $this->_wpSetPostThumbnail($id, $imageId);
             }
         }
+    }
 
+    /**
+     * Updates a service's schedule.
+     *
+     * @since [*next-version*]
+     *
+     * @param int|string|Stringable $id The ID of the service.
+     * @param array                 $ir The intermediate representation of the service.
+     */
+    protected function _updateSchedule($id, $ir)
+    {
+        // If schedule ID is not set in the IR, use the service Id
+        $scheduleId = isset($ir['schedule_id'])
+            ? $ir['schedule_id']
+            : $id;
+
+        // If it does not exist, create it and update the post meta
+        if (!$this->resourcesManager->has($scheduleId)) {
+            $scheduleId = $this->resourcesManager->add([
+                'type' => 'schedule',
+                'name' => sprintf('Schedule for "%s"', $ir['post']['post_title']),
+            ]);
+
+            $this->_updatePostMeta($id, $this->metaPrefix . 'schedule_id', $scheduleId);
+        }
+
+        // Update schedule availability, using the "service availability" in the IR
         if (isset($ir['availability'])) {
-            $this->_updateAvailability($id, $ir);
+            $availability = $ir['availability'];
+            $changeSet    = ['availability' => $availability];
+
+            if (isset($ir['meta']['timezone'])) {
+                $changeSet['timezone'] = $ir['meta']['timezone'];
+            }
+
+            $this->resourcesManager->update($scheduleId, $changeSet);
         }
     }
 
@@ -542,10 +587,12 @@ class ServicesEntityManager implements EntityManagerInterface
             ? $ir['meta']['timezone']
             : 'UTC';
 
+        $scheduleId = $ir['schedule_id'];
+
         $ruleIds = [];
 
         foreach ($rules as $_ruleData) {
-            $_rule = $this->_processSessionRuleData($id, $_ruleData, $timezone);
+            $_rule = $this->_processSessionRuleData($id, $scheduleId, $_ruleData, $timezone);
 
             // If rule has an ID, update the existing rule
             if ($this->_containerHas($_rule, 'id')) {
@@ -565,13 +612,13 @@ class ServicesEntityManager implements EntityManagerInterface
             $ruleIds[] = $_ruleId;
         }
 
-        // Expression for matching the service by its ID
-        $serviceIdExpr = $b->eq($b->var('service_id'), $b->lit($id));
+        // Expression for matching the rules by their resource ID
+        $deleteExpr = $b->eq($b->var('resource_id'), $b->lit($scheduleId));
 
         // If rules were added/updated, ignore them in the condition
         if (count($ruleIds) > 0) {
-            $serviceIdExpr = $b->and(
-                $serviceIdExpr,
+            $deleteExpr = $b->and(
+                $deleteExpr,
                 $b->not(
                     $b->in(
                         $b->var('id'),
@@ -582,7 +629,7 @@ class ServicesEntityManager implements EntityManagerInterface
         }
 
         // Delete the sessions rules according to the above condition
-        $this->rulesDeleteRm->delete($serviceIdExpr);
+        $this->rulesDeleteRm->delete($deleteExpr);
     }
 
     /**
@@ -590,13 +637,14 @@ class ServicesEntityManager implements EntityManagerInterface
      *
      * @since [*next-version*]
      *
-     * @param int|string|Stringable      $serviceId The ID of the service.
-     * @param array|stdClass|Traversable $ruleData  The session rule data that was received.
-     * @param string|Stringable          $serviceTz The service timezone name.
+     * @param int|string|Stringable      $serviceId  The ID of the service.
+     * @param int|string|Stringable      $scheduleId The ID of the service's schedule.
+     * @param array|stdClass|Traversable $ruleData   The session rule data that was received.
+     * @param string|Stringable          $serviceTz  The service timezone name.
      *
      * @return array|stdClass|ArrayAccess|ContainerInterface The processed session rule data.
      */
-    protected function _processSessionRuleData($serviceId, $ruleData, $serviceTz)
+    protected function _processSessionRuleData($serviceId, $scheduleId, $ruleData, $serviceTz)
     {
         $allDay = $this->_containerGet($ruleData, 'isAllDay');
 
@@ -616,7 +664,7 @@ class ServicesEntityManager implements EntityManagerInterface
             'id'                  => $this->_containerHas($ruleData, 'id')
                 ? $this->_containerGet($ruleData, 'id')
                 : null,
-            'service_id'          => $serviceId,
+            'resource_id'         => $scheduleId,
             'start'               => $startDatetime->getTimestamp(),
             'end'                 => $endDateTime->getTimestamp(),
             'all_day'             => $allDay,
@@ -774,6 +822,23 @@ class ServicesEntityManager implements EntityManagerInterface
         return ($metaValue === '')
             ? $default
             : $metaValue;
+    }
+
+    /**
+     * Updates the meta data for the post with a given ID.
+     *
+     * @since [*next-version*]
+     *
+     * @param int|string|Stringable $id    The ID of the post to update.
+     * @param string|Stringable     $key   The meta key.
+     * @param mixed                 $value The meta value.
+     */
+    protected function _updatePostMeta($id, $key, $value)
+    {
+        $id  = $this->_normalizeInt($id);
+        $key = $this->_normalizeString($key);
+
+        \update_post_meta($id, $key, $value);
     }
 
     /**
