@@ -8,6 +8,7 @@ use Dhii\Event\EventFactoryInterface;
 use Dhii\Exception\InternalException;
 use Dhii\Util\String\StringableInterface as Stringable;
 use Psr\Container\ContainerInterface;
+use Psr\EventManager\EventInterface;
 use Psr\EventManager\EventManagerInterface;
 use RebelCode\Modular\Module\AbstractBaseModule;
 
@@ -86,6 +87,29 @@ class EddBkServicesModule extends AbstractBaseModule
 
         // Event for filtering the query to hide services from the Downloads list
         $this->_attach('parse_query', $c->get('eddbk_hide_services_from_downloads_list_handler'));
+
+        // Filter the Download status counts on the list page to remove service counts from them
+        $this->_attach('wp_count_posts', function (EventInterface $event) use ($c) {
+            if ($event->getParam(1) !== 'download') {
+                return;
+            }
+
+            $counts   = $event->getParam(0);
+            $services = $c->get('eddbk_services_manager')->query();
+
+            foreach ($services as $_service) {
+                $counts->{$_service['status']}--;
+            }
+
+            return $counts;
+        });
+
+        // Remove the "Mine" status filter that shows up on the Downloads list page when the above filter is applied
+        $this->_attach('views_edit-download', function (EventInterface $event) {
+            $views = $event->getParam(0);
+            unset($views['mine']);
+            $event->setParams([0 => $views]);
+        });
     }
 
     /**
