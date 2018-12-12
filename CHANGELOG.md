@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [[*next-version*]] - YYYY-MM-DD
 
+## [0.1-alpha14] - 2018-12-12
+### Fixed
+- The download-hiding query was causing Downloads created using v0.2 or later to not be shown in the list.
+
 ## [0.1-alpha13] - 2018-12-05
 ### Changed
 - Replaced `session_lengths` with `session_types`.
