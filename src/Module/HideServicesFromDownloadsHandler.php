@@ -2,12 +2,19 @@
 
 namespace RebelCode\EddBookings\Services\Module;
 
+use Dhii\Data\Container\ContainerGetCapableTrait;
+use Dhii\Data\Container\CreateContainerExceptionCapableTrait;
+use Dhii\Data\Container\CreateNotFoundExceptionCapableTrait;
+use Dhii\Data\Container\NormalizeKeyCapableTrait;
 use Dhii\Exception\CreateInvalidArgumentExceptionCapableTrait;
+use Dhii\Exception\CreateOutOfRangeExceptionCapableTrait;
 use Dhii\I18n\StringTranslatingTrait;
 use Dhii\Invocation\InvocableInterface;
 use Dhii\Util\Normalization\NormalizeStringCapableTrait;
 use Dhii\Util\String\StringableInterface as Stringable;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\EventManager\EventInterface;
+use RebelCode\Entity\QueryCapableManagerInterface;
 
 /**
  * The handler that changes the host custom post type query to exclude services.
@@ -17,7 +24,22 @@ use Psr\EventManager\EventInterface;
 class HideServicesFromDownloadsHandler implements InvocableInterface
 {
     /* @since [*next-version*] */
+    use ContainerGetCapableTrait;
+
+    /* @since [*next-version*] */
+    use NormalizeKeyCapableTrait;
+
+    /* @since [*next-version*] */
     use NormalizeStringCapableTrait;
+
+    /* @since [*next-version*] */
+    use CreateNotFoundExceptionCapableTrait;
+
+    /* @since [*next-version*] */
+    use CreateContainerExceptionCapableTrait;
+
+    /* @since [*next-version*] */
+    use CreateOutOfRangeExceptionCapableTrait;
 
     /* @since [*next-version*] */
     use CreateInvalidArgumentExceptionCapableTrait;
@@ -35,26 +57,26 @@ class HideServicesFromDownloadsHandler implements InvocableInterface
     protected $postType;
 
     /**
-     * The prefix for post meta keys.
+     * The services entity manager.
      *
      * @since [*next-version*]
      *
-     * @var string|Stringable
+     * @var QueryCapableManagerInterface
      */
-    protected $metaPrefix;
+    protected $servicesManager;
 
     /**
      * Constructor.
      *
      * @since [*next-version*]
      *
-     * @param string|Stringable $postType   The slug of the services post type.
-     * @param string|Stringable $metaPrefix The prefix for post meta keys.
+     * @param string|Stringable            $postType        The slug of the services post type.
+     * @param QueryCapableManagerInterface $servicesManager The services entity manager.
      */
-    public function __construct($postType, $metaPrefix)
+    public function __construct($postType, $servicesManager)
     {
-        $this->postType   = $this->_normalizeString($postType);
-        $this->metaPrefix = $this->_normalizeString($metaPrefix);
+        $this->postType = $this->_normalizeString($postType);
+        $this->servicesManager = $servicesManager;
     }
 
     /**
@@ -77,7 +99,7 @@ class HideServicesFromDownloadsHandler implements InvocableInterface
         }
 
         $screen = get_current_screen();
-        $query  = $event->getParam(0);
+        $query = $event->getParam(0);
 
         if ($screen->post_type !== $this->postType || $screen->id !== 'edit-download' || $query === null) {
             return;
@@ -88,8 +110,16 @@ class HideServicesFromDownloadsHandler implements InvocableInterface
             return;
         }
 
-        $query->query_vars['meta_key']     = $this->metaPrefix . 'bookings_enabled';
-        $query->query_vars['meta_value']   = '1';
-        $query->query_vars['meta_compare'] = '!=';
+        $serviceIds = [];
+        $services = $this->servicesManager->query();
+        foreach ($services as $_service) {
+            try {
+                $serviceIds[] = $this->_containerGet($_service, 'id');
+            } catch (NotFoundExceptionInterface $exception) {
+                continue;
+            }
+        }
+
+        $query->query_vars['post__not_in'] = $serviceIds;
     }
 }

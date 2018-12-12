@@ -183,7 +183,7 @@ class EddBkServicesServiceList extends ArrayObject
             'eddbk_hide_services_from_downloads_list_handler' => function (ContainerInterface $c) {
                 return new HideServicesFromDownloadsHandler(
                     $c->get('eddbk_services/post_type'),
-                    $c->get('eddbk_services/meta_prefix')
+                    $c->get('eddbk_services_manager')
                 );
             },
 
