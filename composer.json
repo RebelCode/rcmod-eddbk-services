@@ -19,6 +19,7 @@
         "rebelcode/wp-cqrs-resource-models": "^0.2-alpha1",
         "rebelcode/expression-wp-query-builder": "^0.1-alpha1",
         "rebelcode/entity-manager-interface": "^0.1-alpha1",
+        "rebelcode/time-abstract": "^0.1",
         "dhii/cqrs-resource-model-interface": "^0.2-alpha1",
         "dhii/sql-interface": "^0.1-alpha1",
         "dhii/iterator-helper-base": "^0.1-alpha2",
